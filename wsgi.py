@@ -1,6 +1,7 @@
 from flask import Flask
-from .fetch_api import fetch_api
+from fetch_api import fetch_api
 from dotenv import load_dotenv
+from flask_cors import CORS
 import os
 
 load_dotenv()
@@ -9,6 +10,11 @@ from webaiku.extension import WEBAIKU
 
 
 app = Flask(__name__)
+CORS(app,
+     origins=["*","http://localhost:4200", "http://localhost:5173", "http://localhost:3000"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"],
+     supports_credentials=True)
 WEBAIKU(
     app, "webapps/spark", int(os.getenv("VITE_API_PORT"))
 )
