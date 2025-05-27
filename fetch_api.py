@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from client import Dataiku
 from dotenv import load_dotenv
 import pandas as pd
+import random
 
 load_dotenv()
 
@@ -206,3 +207,65 @@ def productionStat():
             })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@fetch_api.route("/well", methods=["GET"])
+def get_well():
+  try:
+    project = client.get_default_project()
+    dataset = project.get_dataset("scored_MHI_distinct")
+    df = dataset.get_as_core_dataset()
+    df = df.get_dataframe()
+    dataset2 = project.get_dataset("Well_data")
+    df2 = dataset2.get_as_core_dataset()
+    df2 = df2.get_dataframe()
+    df2['DATE'] = pd.to_datetime(df2['DATE']).dt.strftime('%Y-%m-%d')
+    wells = df2['WELL'].unique()
+    today = pd.to_datetime("today").normalize()
+    current_date = today.strftime("%Y-%m-%d")
+    response = {}
+    for name in wells:
+      area = name.split('-')[0]
+      type_well = "Oil"
+      current_prod_well = df2[(df2['WELL'] == name) & (df2['DATE'] == current_date)]
+      if not current_prod_well.empty and (current_prod_well['OIL_RATE (stb/d)'].iloc[0] == 0 or pd.isna(current_prod_well['OIL_RATE (stb/d)'].iloc[0])):
+        type_well = "Gas"
+      # Artificial Lift
+      artificial_lift = None
+      artificial_status = random.randint(1,3)
+      if artificial_status == 1:
+         artificial_lift = "Good"
+      elif artificial_status == 2:
+         artificial_lift = "Warning"
+      else:
+        artificial_lift = "Critical"
+
+      # Randomize Well Integrity Status 1 - 3
+      integrity_status = random.randint(1, 3)
+      if integrity_status == 1:
+         integrity_status = "Good"
+      elif integrity_status == 2:
+         integrity_status = "Warning"
+      else:
+         integrity_status = "Critical"
+
+      workover_score = df[df["WELL"]==name]["workover_score"]
+      if workover_score.empty:
+         # randomize workover score between 0 and 1
+         workover_score = random.uniform(0, 1)
+      else:
+         workover_score = workover_score.iloc[0]
+
+      response[name] = {
+        "area": area,
+        "type": type_well,
+        "artificialLift": artificial_lift,
+        "integrityStatus": integrity_status,
+        "workoverScore": workover_score
+      }
+
+    return jsonify(response)
+
+  except Exception as e:
+    return jsonify({"error": str(e)}), 500
+
