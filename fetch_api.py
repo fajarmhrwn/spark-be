@@ -5,8 +5,8 @@ import pandas as pd
 
 load_dotenv()
 
-client = Dataiku().client
 fetch_api = Blueprint("fetch_api", __name__, url_prefix="/api")
+client = Dataiku().client
 
 
 @fetch_api.route("/hello", methods=["GET"])
