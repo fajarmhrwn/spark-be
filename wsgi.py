@@ -12,7 +12,7 @@ from webaiku.extension import WEBAIKU
 app = Flask(__name__)
 # Fix: Use 'origins' parameter correctly
 CORS(app,
-     origins=["http://localhost:4200", "http://localhost:5173", "http://localhost:3000"],
+     origins=["*","http://localhost:4200"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization"],
      supports_credentials=True)
