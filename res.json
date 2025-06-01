@@ -1,0 +1,3911 @@
+{
+    "analysis_summary": {
+        "data_points_for_fit": 430,
+        "estimated_ultimate_recovery_30yr": 4525364.881846088,
+        "forecast_period_days": 300,
+        "historical_oil_rate_stats": {
+            "max": 1549.81,
+            "mean": 413.27751162790696,
+            "min": 0.55,
+            "std_dev": 243.9590885542065
+        },
+        "historical_time_range_days": 429,
+        "input_data_points": 430,
+        "production_date_range_analyzed": {
+            "end": "2025-06-23T00:00:00",
+            "start": "2024-04-20T00:00:00"
+        }
+    },
+    "best_model_by_r2": "harmonic",
+    "chart_js_config_suggestion": {
+        "data": {
+            "datasets": "USE_DATA_FROM_DATA_FOR_CHART_KEY"
+        },
+        "options": {
+            "maintainAspectRatio": false,
+            "plugins": {
+                "legend": {
+                    "display": true,
+                    "position": "top"
+                },
+                "title": {
+                    "display": true,
+                    "text": "Oil Production Decline Curve - Well: FAR-1"
+                }
+            },
+            "responsive": true,
+            "scales": {
+                "x": {
+                    "time": {
+                        "unit": "month"
+                    },
+                    "title": {
+                        "display": true,
+                        "text": "Date"
+                    },
+                    "type": "time"
+                },
+                "y": {
+                    "beginAtZero": true,
+                    "title": {
+                        "display": true,
+                        "text": "Oil Rate (stb/d)"
+                    }
+                }
+            }
+        },
+        "type": "line"
+    },
+    "data_for_chart": {
+        "datasets": [
+            {
+                "backgroundColor": "rgba(75, 192, 192, 0.5)",
+                "borderColor": "rgb(75, 192, 192)",
+                "data": [
+                    {
+                        "rel_time": 0.0,
+                        "type": "historical",
+                        "x": "2024-04-20T00:00:00",
+                        "y": 631.47
+                    },
+                    {
+                        "rel_time": 1.0,
+                        "type": "historical",
+                        "x": "2024-04-21T00:00:00",
+                        "y": 451.91
+                    },
+                    {
+                        "rel_time": 2.0,
+                        "type": "historical",
+                        "x": "2024-04-22T00:00:00",
+                        "y": 435.55
+                    },
+                    {
+                        "rel_time": 3.0,
+                        "type": "historical",
+                        "x": "2024-04-23T00:00:00",
+                        "y": 446.62
+                    },
+                    {
+                        "rel_time": 4.0,
+                        "type": "historical",
+                        "x": "2024-04-24T00:00:00",
+                        "y": 387.93
+                    },
+                    {
+                        "rel_time": 5.0,
+                        "type": "historical",
+                        "x": "2024-04-25T00:00:00",
+                        "y": 422.22
+                    },
+                    {
+                        "rel_time": 6.0,
+                        "type": "historical",
+                        "x": "2024-04-26T00:00:00",
+                        "y": 337.64
+                    },
+                    {
+                        "rel_time": 7.0,
+                        "type": "historical",
+                        "x": "2024-04-27T00:00:00",
+                        "y": 211.31
+                    },
+                    {
+                        "rel_time": 8.0,
+                        "type": "historical",
+                        "x": "2024-04-28T00:00:00",
+                        "y": 204.65
+                    },
+                    {
+                        "rel_time": 9.0,
+                        "type": "historical",
+                        "x": "2024-04-29T00:00:00",
+                        "y": 219.05
+                    },
+                    {
+                        "rel_time": 10.0,
+                        "type": "historical",
+                        "x": "2024-04-30T00:00:00",
+                        "y": 229.63
+                    },
+                    {
+                        "rel_time": 11.0,
+                        "type": "historical",
+                        "x": "2024-05-01T00:00:00",
+                        "y": 223.27
+                    },
+                    {
+                        "rel_time": 12.0,
+                        "type": "historical",
+                        "x": "2024-05-02T00:00:00",
+                        "y": 221.41
+                    },
+                    {
+                        "rel_time": 13.0,
+                        "type": "historical",
+                        "x": "2024-05-03T00:00:00",
+                        "y": 245.4
+                    },
+                    {
+                        "rel_time": 14.0,
+                        "type": "historical",
+                        "x": "2024-05-04T00:00:00",
+                        "y": 240.06
+                    },
+                    {
+                        "rel_time": 15.0,
+                        "type": "historical",
+                        "x": "2024-05-05T00:00:00",
+                        "y": 235.07
+                    },
+                    {
+                        "rel_time": 16.0,
+                        "type": "historical",
+                        "x": "2024-05-06T00:00:00",
+                        "y": 256.04
+                    },
+                    {
+                        "rel_time": 17.0,
+                        "type": "historical",
+                        "x": "2024-05-07T00:00:00",
+                        "y": 212.85
+                    },
+                    {
+                        "rel_time": 18.0,
+                        "type": "historical",
+                        "x": "2024-05-08T00:00:00",
+                        "y": 83.28
+                    },
+                    {
+                        "rel_time": 19.0,
+                        "type": "historical",
+                        "x": "2024-05-09T00:00:00",
+                        "y": 294.17
+                    },
+                    {
+                        "rel_time": 20.0,
+                        "type": "historical",
+                        "x": "2024-05-10T00:00:00",
+                        "y": 353.36
+                    },
+                    {
+                        "rel_time": 21.0,
+                        "type": "historical",
+                        "x": "2024-05-11T00:00:00",
+                        "y": 504.77
+                    },
+                    {
+                        "rel_time": 22.0,
+                        "type": "historical",
+                        "x": "2024-05-12T00:00:00",
+                        "y": 537.12
+                    },
+                    {
+                        "rel_time": 23.0,
+                        "type": "historical",
+                        "x": "2024-05-13T00:00:00",
+                        "y": 502.61
+                    },
+                    {
+                        "rel_time": 24.0,
+                        "type": "historical",
+                        "x": "2024-05-14T00:00:00",
+                        "y": 635.31
+                    },
+                    {
+                        "rel_time": 25.0,
+                        "type": "historical",
+                        "x": "2024-05-15T00:00:00",
+                        "y": 143.08
+                    },
+                    {
+                        "rel_time": 26.0,
+                        "type": "historical",
+                        "x": "2024-05-16T00:00:00",
+                        "y": 645.3
+                    },
+                    {
+                        "rel_time": 27.0,
+                        "type": "historical",
+                        "x": "2024-05-17T00:00:00",
+                        "y": 110.7
+                    },
+                    {
+                        "rel_time": 28.0,
+                        "type": "historical",
+                        "x": "2024-05-18T00:00:00",
+                        "y": 355.61
+                    },
+                    {
+                        "rel_time": 29.0,
+                        "type": "historical",
+                        "x": "2024-05-19T00:00:00",
+                        "y": 370.14
+                    },
+                    {
+                        "rel_time": 30.0,
+                        "type": "historical",
+                        "x": "2024-05-20T00:00:00",
+                        "y": 369.91
+                    },
+                    {
+                        "rel_time": 31.0,
+                        "type": "historical",
+                        "x": "2024-05-21T00:00:00",
+                        "y": 360.29
+                    },
+                    {
+                        "rel_time": 32.0,
+                        "type": "historical",
+                        "x": "2024-05-22T00:00:00",
+                        "y": 344.41
+                    },
+                    {
+                        "rel_time": 33.0,
+                        "type": "historical",
+                        "x": "2024-05-23T00:00:00",
+                        "y": 291.3
+                    },
+                    {
+                        "rel_time": 34.0,
+                        "type": "historical",
+                        "x": "2024-05-24T00:00:00",
+                        "y": 176.51
+                    },
+                    {
+                        "rel_time": 35.0,
+                        "type": "historical",
+                        "x": "2024-05-25T00:00:00",
+                        "y": 53.69
+                    },
+                    {
+                        "rel_time": 36.0,
+                        "type": "historical",
+                        "x": "2024-05-26T00:00:00",
+                        "y": 583.05
+                    },
+                    {
+                        "rel_time": 37.0,
+                        "type": "historical",
+                        "x": "2024-05-27T00:00:00",
+                        "y": 732.83
+                    },
+                    {
+                        "rel_time": 38.0,
+                        "type": "historical",
+                        "x": "2024-05-28T00:00:00",
+                        "y": 443.81
+                    },
+                    {
+                        "rel_time": 39.0,
+                        "type": "historical",
+                        "x": "2024-05-29T00:00:00",
+                        "y": 384.65
+                    },
+                    {
+                        "rel_time": 40.0,
+                        "type": "historical",
+                        "x": "2024-05-30T00:00:00",
+                        "y": 322.99
+                    },
+                    {
+                        "rel_time": 41.0,
+                        "type": "historical",
+                        "x": "2024-05-31T00:00:00",
+                        "y": 350.0
+                    },
+                    {
+                        "rel_time": 42.0,
+                        "type": "historical",
+                        "x": "2024-06-01T00:00:00",
+                        "y": 267.48
+                    },
+                    {
+                        "rel_time": 43.0,
+                        "type": "historical",
+                        "x": "2024-06-02T00:00:00",
+                        "y": 201.69
+                    },
+                    {
+                        "rel_time": 44.0,
+                        "type": "historical",
+                        "x": "2024-06-03T00:00:00",
+                        "y": 182.64
+                    },
+                    {
+                        "rel_time": 45.0,
+                        "type": "historical",
+                        "x": "2024-06-04T00:00:00",
+                        "y": 223.78
+                    },
+                    {
+                        "rel_time": 46.0,
+                        "type": "historical",
+                        "x": "2024-06-05T00:00:00",
+                        "y": 227.7
+                    },
+                    {
+                        "rel_time": 47.0,
+                        "type": "historical",
+                        "x": "2024-06-06T00:00:00",
+                        "y": 229.61
+                    },
+                    {
+                        "rel_time": 48.0,
+                        "type": "historical",
+                        "x": "2024-06-07T00:00:00",
+                        "y": 204.35
+                    },
+                    {
+                        "rel_time": 49.0,
+                        "type": "historical",
+                        "x": "2024-06-08T00:00:00",
+                        "y": 264.65
+                    },
+                    {
+                        "rel_time": 50.0,
+                        "type": "historical",
+                        "x": "2024-06-09T00:00:00",
+                        "y": 165.82
+                    },
+                    {
+                        "rel_time": 51.0,
+                        "type": "historical",
+                        "x": "2024-06-10T00:00:00",
+                        "y": 15.53
+                    },
+                    {
+                        "rel_time": 52.0,
+                        "type": "historical",
+                        "x": "2024-06-11T00:00:00",
+                        "y": 334.51
+                    },
+                    {
+                        "rel_time": 53.0,
+                        "type": "historical",
+                        "x": "2024-06-12T00:00:00",
+                        "y": 211.5
+                    },
+                    {
+                        "rel_time": 54.0,
+                        "type": "historical",
+                        "x": "2024-06-13T00:00:00",
+                        "y": 664.96
+                    },
+                    {
+                        "rel_time": 55.0,
+                        "type": "historical",
+                        "x": "2024-06-14T00:00:00",
+                        "y": 738.49
+                    },
+                    {
+                        "rel_time": 56.0,
+                        "type": "historical",
+                        "x": "2024-06-15T00:00:00",
+                        "y": 940.93
+                    },
+                    {
+                        "rel_time": 57.0,
+                        "type": "historical",
+                        "x": "2024-06-16T00:00:00",
+                        "y": 625.9
+                    },
+                    {
+                        "rel_time": 58.0,
+                        "type": "historical",
+                        "x": "2024-06-17T00:00:00",
+                        "y": 410.07
+                    },
+                    {
+                        "rel_time": 59.0,
+                        "type": "historical",
+                        "x": "2024-06-18T00:00:00",
+                        "y": 475.6
+                    },
+                    {
+                        "rel_time": 60.0,
+                        "type": "historical",
+                        "x": "2024-06-19T00:00:00",
+                        "y": 624.59
+                    },
+                    {
+                        "rel_time": 61.0,
+                        "type": "historical",
+                        "x": "2024-06-20T00:00:00",
+                        "y": 638.16
+                    },
+                    {
+                        "rel_time": 62.0,
+                        "type": "historical",
+                        "x": "2024-06-21T00:00:00",
+                        "y": 652.82
+                    },
+                    {
+                        "rel_time": 63.0,
+                        "type": "historical",
+                        "x": "2024-06-22T00:00:00",
+                        "y": 519.64
+                    },
+                    {
+                        "rel_time": 64.0,
+                        "type": "historical",
+                        "x": "2024-06-23T00:00:00",
+                        "y": 409.69
+                    },
+                    {
+                        "rel_time": 65.0,
+                        "type": "historical",
+                        "x": "2024-06-24T00:00:00",
+                        "y": 419.54
+                    },
+                    {
+                        "rel_time": 66.0,
+                        "type": "historical",
+                        "x": "2024-06-25T00:00:00",
+                        "y": 419.02
+                    },
+                    {
+                        "rel_time": 67.0,
+                        "type": "historical",
+                        "x": "2024-06-26T00:00:00",
+                        "y": 421.26
+                    },
+                    {
+                        "rel_time": 68.0,
+                        "type": "historical",
+                        "x": "2024-06-27T00:00:00",
+                        "y": 423.36
+                    },
+                    {
+                        "rel_time": 69.0,
+                        "type": "historical",
+                        "x": "2024-06-28T00:00:00",
+                        "y": 466.03
+                    },
+                    {
+                        "rel_time": 70.0,
+                        "type": "historical",
+                        "x": "2024-06-29T00:00:00",
+                        "y": 474.1
+                    },
+                    {
+                        "rel_time": 71.0,
+                        "type": "historical",
+                        "x": "2024-06-30T00:00:00",
+                        "y": 402.41
+                    },
+                    {
+                        "rel_time": 72.0,
+                        "type": "historical",
+                        "x": "2024-07-01T00:00:00",
+                        "y": 125.26
+                    },
+                    {
+                        "rel_time": 73.0,
+                        "type": "historical",
+                        "x": "2024-07-02T00:00:00",
+                        "y": 7.64
+                    },
+                    {
+                        "rel_time": 74.0,
+                        "type": "historical",
+                        "x": "2024-07-03T00:00:00",
+                        "y": 226.24
+                    },
+                    {
+                        "rel_time": 75.0,
+                        "type": "historical",
+                        "x": "2024-07-04T00:00:00",
+                        "y": 447.32
+                    },
+                    {
+                        "rel_time": 76.0,
+                        "type": "historical",
+                        "x": "2024-07-05T00:00:00",
+                        "y": 442.16
+                    },
+                    {
+                        "rel_time": 77.0,
+                        "type": "historical",
+                        "x": "2024-07-06T00:00:00",
+                        "y": 418.97
+                    },
+                    {
+                        "rel_time": 78.0,
+                        "type": "historical",
+                        "x": "2024-07-07T00:00:00",
+                        "y": 399.77
+                    },
+                    {
+                        "rel_time": 79.0,
+                        "type": "historical",
+                        "x": "2024-07-08T00:00:00",
+                        "y": 621.12
+                    },
+                    {
+                        "rel_time": 80.0,
+                        "type": "historical",
+                        "x": "2024-07-09T00:00:00",
+                        "y": 91.76
+                    },
+                    {
+                        "rel_time": 81.0,
+                        "type": "historical",
+                        "x": "2024-07-10T00:00:00",
+                        "y": 222.87
+                    },
+                    {
+                        "rel_time": 82.0,
+                        "type": "historical",
+                        "x": "2024-07-11T00:00:00",
+                        "y": 607.87
+                    },
+                    {
+                        "rel_time": 83.0,
+                        "type": "historical",
+                        "x": "2024-07-12T00:00:00",
+                        "y": 574.96
+                    },
+                    {
+                        "rel_time": 84.0,
+                        "type": "historical",
+                        "x": "2024-07-13T00:00:00",
+                        "y": 443.99
+                    },
+                    {
+                        "rel_time": 85.0,
+                        "type": "historical",
+                        "x": "2024-07-14T00:00:00",
+                        "y": 396.95
+                    },
+                    {
+                        "rel_time": 86.0,
+                        "type": "historical",
+                        "x": "2024-07-15T00:00:00",
+                        "y": 339.92
+                    },
+                    {
+                        "rel_time": 87.0,
+                        "type": "historical",
+                        "x": "2024-07-16T00:00:00",
+                        "y": 340.53
+                    },
+                    {
+                        "rel_time": 88.0,
+                        "type": "historical",
+                        "x": "2024-07-17T00:00:00",
+                        "y": 318.85
+                    },
+                    {
+                        "rel_time": 89.0,
+                        "type": "historical",
+                        "x": "2024-07-18T00:00:00",
+                        "y": 320.34
+                    },
+                    {
+                        "rel_time": 90.0,
+                        "type": "historical",
+                        "x": "2024-07-19T00:00:00",
+                        "y": 268.47
+                    },
+                    {
+                        "rel_time": 91.0,
+                        "type": "historical",
+                        "x": "2024-07-20T00:00:00",
+                        "y": 172.87
+                    },
+                    {
+                        "rel_time": 92.0,
+                        "type": "historical",
+                        "x": "2024-07-21T00:00:00",
+                        "y": 81.91
+                    },
+                    {
+                        "rel_time": 93.0,
+                        "type": "historical",
+                        "x": "2024-07-22T00:00:00",
+                        "y": 57.52
+                    },
+                    {
+                        "rel_time": 94.0,
+                        "type": "historical",
+                        "x": "2024-07-23T00:00:00",
+                        "y": 622.85
+                    },
+                    {
+                        "rel_time": 95.0,
+                        "type": "historical",
+                        "x": "2024-07-24T00:00:00",
+                        "y": 624.44
+                    },
+                    {
+                        "rel_time": 96.0,
+                        "type": "historical",
+                        "x": "2024-07-25T00:00:00",
+                        "y": 550.72
+                    },
+                    {
+                        "rel_time": 97.0,
+                        "type": "historical",
+                        "x": "2024-07-26T00:00:00",
+                        "y": 565.02
+                    },
+                    {
+                        "rel_time": 98.0,
+                        "type": "historical",
+                        "x": "2024-07-27T00:00:00",
+                        "y": 618.61
+                    },
+                    {
+                        "rel_time": 99.0,
+                        "type": "historical",
+                        "x": "2024-07-28T00:00:00",
+                        "y": 609.35
+                    },
+                    {
+                        "rel_time": 100.0,
+                        "type": "historical",
+                        "x": "2024-07-29T00:00:00",
+                        "y": 447.87
+                    },
+                    {
+                        "rel_time": 101.0,
+                        "type": "historical",
+                        "x": "2024-07-30T00:00:00",
+                        "y": 355.76
+                    },
+                    {
+                        "rel_time": 102.0,
+                        "type": "historical",
+                        "x": "2024-07-31T00:00:00",
+                        "y": 342.99
+                    },
+                    {
+                        "rel_time": 103.0,
+                        "type": "historical",
+                        "x": "2024-08-01T00:00:00",
+                        "y": 385.1
+                    },
+                    {
+                        "rel_time": 104.0,
+                        "type": "historical",
+                        "x": "2024-08-02T00:00:00",
+                        "y": 225.74
+                    },
+                    {
+                        "rel_time": 105.0,
+                        "type": "historical",
+                        "x": "2024-08-03T00:00:00",
+                        "y": 216.14
+                    },
+                    {
+                        "rel_time": 106.0,
+                        "type": "historical",
+                        "x": "2024-08-04T00:00:00",
+                        "y": 453.09
+                    },
+                    {
+                        "rel_time": 107.0,
+                        "type": "historical",
+                        "x": "2024-08-05T00:00:00",
+                        "y": 397.18
+                    },
+                    {
+                        "rel_time": 108.0,
+                        "type": "historical",
+                        "x": "2024-08-06T00:00:00",
+                        "y": 427.44
+                    },
+                    {
+                        "rel_time": 109.0,
+                        "type": "historical",
+                        "x": "2024-08-07T00:00:00",
+                        "y": 296.78
+                    },
+                    {
+                        "rel_time": 110.0,
+                        "type": "historical",
+                        "x": "2024-08-08T00:00:00",
+                        "y": 307.88
+                    },
+                    {
+                        "rel_time": 111.0,
+                        "type": "historical",
+                        "x": "2024-08-09T00:00:00",
+                        "y": 298.12
+                    },
+                    {
+                        "rel_time": 112.0,
+                        "type": "historical",
+                        "x": "2024-08-10T00:00:00",
+                        "y": 232.24
+                    },
+                    {
+                        "rel_time": 113.0,
+                        "type": "historical",
+                        "x": "2024-08-11T00:00:00",
+                        "y": 236.6
+                    },
+                    {
+                        "rel_time": 114.0,
+                        "type": "historical",
+                        "x": "2024-08-12T00:00:00",
+                        "y": 237.43
+                    },
+                    {
+                        "rel_time": 115.0,
+                        "type": "historical",
+                        "x": "2024-08-13T00:00:00",
+                        "y": 239.99
+                    },
+                    {
+                        "rel_time": 116.0,
+                        "type": "historical",
+                        "x": "2024-08-14T00:00:00",
+                        "y": 241.12
+                    },
+                    {
+                        "rel_time": 117.0,
+                        "type": "historical",
+                        "x": "2024-08-15T00:00:00",
+                        "y": 293.21
+                    },
+                    {
+                        "rel_time": 118.0,
+                        "type": "historical",
+                        "x": "2024-08-16T00:00:00",
+                        "y": 308.45
+                    },
+                    {
+                        "rel_time": 119.0,
+                        "type": "historical",
+                        "x": "2024-08-17T00:00:00",
+                        "y": 210.23
+                    },
+                    {
+                        "rel_time": 120.0,
+                        "type": "historical",
+                        "x": "2024-08-18T00:00:00",
+                        "y": 207.31
+                    },
+                    {
+                        "rel_time": 121.0,
+                        "type": "historical",
+                        "x": "2024-08-19T00:00:00",
+                        "y": 118.71
+                    },
+                    {
+                        "rel_time": 122.0,
+                        "type": "historical",
+                        "x": "2024-08-20T00:00:00",
+                        "y": 72.77
+                    },
+                    {
+                        "rel_time": 123.0,
+                        "type": "historical",
+                        "x": "2024-08-21T00:00:00",
+                        "y": 52.25
+                    },
+                    {
+                        "rel_time": 124.0,
+                        "type": "historical",
+                        "x": "2024-08-22T00:00:00",
+                        "y": 65.72
+                    },
+                    {
+                        "rel_time": 125.0,
+                        "type": "historical",
+                        "x": "2024-08-23T00:00:00",
+                        "y": 150.62
+                    },
+                    {
+                        "rel_time": 126.0,
+                        "type": "historical",
+                        "x": "2024-08-24T00:00:00",
+                        "y": 257.83
+                    },
+                    {
+                        "rel_time": 127.0,
+                        "type": "historical",
+                        "x": "2024-08-25T00:00:00",
+                        "y": 197.52
+                    },
+                    {
+                        "rel_time": 128.0,
+                        "type": "historical",
+                        "x": "2024-08-26T00:00:00",
+                        "y": 197.21
+                    },
+                    {
+                        "rel_time": 129.0,
+                        "type": "historical",
+                        "x": "2024-08-27T00:00:00",
+                        "y": 199.16
+                    },
+                    {
+                        "rel_time": 130.0,
+                        "type": "historical",
+                        "x": "2024-08-28T00:00:00",
+                        "y": 199.68
+                    },
+                    {
+                        "rel_time": 131.0,
+                        "type": "historical",
+                        "x": "2024-08-29T00:00:00",
+                        "y": 258.42
+                    },
+                    {
+                        "rel_time": 132.0,
+                        "type": "historical",
+                        "x": "2024-08-30T00:00:00",
+                        "y": 304.54
+                    },
+                    {
+                        "rel_time": 133.0,
+                        "type": "historical",
+                        "x": "2024-08-31T00:00:00",
+                        "y": 232.69
+                    },
+                    {
+                        "rel_time": 134.0,
+                        "type": "historical",
+                        "x": "2024-09-01T00:00:00",
+                        "y": 303.99
+                    },
+                    {
+                        "rel_time": 135.0,
+                        "type": "historical",
+                        "x": "2024-09-02T00:00:00",
+                        "y": 338.24
+                    },
+                    {
+                        "rel_time": 136.0,
+                        "type": "historical",
+                        "x": "2024-09-03T00:00:00",
+                        "y": 208.0
+                    },
+                    {
+                        "rel_time": 137.0,
+                        "type": "historical",
+                        "x": "2024-09-04T00:00:00",
+                        "y": 317.38
+                    },
+                    {
+                        "rel_time": 138.0,
+                        "type": "historical",
+                        "x": "2024-09-05T00:00:00",
+                        "y": 281.93
+                    },
+                    {
+                        "rel_time": 139.0,
+                        "type": "historical",
+                        "x": "2024-09-06T00:00:00",
+                        "y": 280.17
+                    },
+                    {
+                        "rel_time": 140.0,
+                        "type": "historical",
+                        "x": "2024-09-07T00:00:00",
+                        "y": 284.72
+                    },
+                    {
+                        "rel_time": 141.0,
+                        "type": "historical",
+                        "x": "2024-09-08T00:00:00",
+                        "y": 299.49
+                    },
+                    {
+                        "rel_time": 142.0,
+                        "type": "historical",
+                        "x": "2024-09-09T00:00:00",
+                        "y": 287.42
+                    },
+                    {
+                        "rel_time": 143.0,
+                        "type": "historical",
+                        "x": "2024-09-10T00:00:00",
+                        "y": 293.43
+                    },
+                    {
+                        "rel_time": 144.0,
+                        "type": "historical",
+                        "x": "2024-09-11T00:00:00",
+                        "y": 275.74
+                    },
+                    {
+                        "rel_time": 145.0,
+                        "type": "historical",
+                        "x": "2024-09-12T00:00:00",
+                        "y": 271.68
+                    },
+                    {
+                        "rel_time": 146.0,
+                        "type": "historical",
+                        "x": "2024-09-13T00:00:00",
+                        "y": 253.28
+                    },
+                    {
+                        "rel_time": 147.0,
+                        "type": "historical",
+                        "x": "2024-09-14T00:00:00",
+                        "y": 265.31
+                    },
+                    {
+                        "rel_time": 148.0,
+                        "type": "historical",
+                        "x": "2024-09-15T00:00:00",
+                        "y": 248.04
+                    },
+                    {
+                        "rel_time": 149.0,
+                        "type": "historical",
+                        "x": "2024-09-16T00:00:00",
+                        "y": 246.84
+                    },
+                    {
+                        "rel_time": 150.0,
+                        "type": "historical",
+                        "x": "2024-09-17T00:00:00",
+                        "y": 243.92
+                    },
+                    {
+                        "rel_time": 151.0,
+                        "type": "historical",
+                        "x": "2024-09-18T00:00:00",
+                        "y": 189.41
+                    },
+                    {
+                        "rel_time": 152.0,
+                        "type": "historical",
+                        "x": "2024-09-19T00:00:00",
+                        "y": 108.85
+                    },
+                    {
+                        "rel_time": 153.0,
+                        "type": "historical",
+                        "x": "2024-09-20T00:00:00",
+                        "y": 81.67
+                    },
+                    {
+                        "rel_time": 154.0,
+                        "type": "historical",
+                        "x": "2024-09-21T00:00:00",
+                        "y": 63.63
+                    },
+                    {
+                        "rel_time": 155.0,
+                        "type": "historical",
+                        "x": "2024-09-22T00:00:00",
+                        "y": 37.98
+                    },
+                    {
+                        "rel_time": 156.0,
+                        "type": "historical",
+                        "x": "2024-09-23T00:00:00",
+                        "y": 50.3
+                    },
+                    {
+                        "rel_time": 157.0,
+                        "type": "historical",
+                        "x": "2024-09-24T00:00:00",
+                        "y": 0.55
+                    },
+                    {
+                        "rel_time": 158.0,
+                        "type": "historical",
+                        "x": "2024-09-25T00:00:00",
+                        "y": 24.87
+                    },
+                    {
+                        "rel_time": 159.0,
+                        "type": "historical",
+                        "x": "2024-09-26T00:00:00",
+                        "y": 327.03
+                    },
+                    {
+                        "rel_time": 160.0,
+                        "type": "historical",
+                        "x": "2024-09-27T00:00:00",
+                        "y": 411.79
+                    },
+                    {
+                        "rel_time": 161.0,
+                        "type": "historical",
+                        "x": "2024-09-28T00:00:00",
+                        "y": 156.61
+                    },
+                    {
+                        "rel_time": 162.0,
+                        "type": "historical",
+                        "x": "2024-09-29T00:00:00",
+                        "y": 187.41
+                    },
+                    {
+                        "rel_time": 163.0,
+                        "type": "historical",
+                        "x": "2024-09-30T00:00:00",
+                        "y": 3.32
+                    },
+                    {
+                        "rel_time": 164.0,
+                        "type": "historical",
+                        "x": "2024-10-01T00:00:00",
+                        "y": 606.2
+                    },
+                    {
+                        "rel_time": 165.0,
+                        "type": "historical",
+                        "x": "2024-10-02T00:00:00",
+                        "y": 399.81
+                    },
+                    {
+                        "rel_time": 166.0,
+                        "type": "historical",
+                        "x": "2024-10-03T00:00:00",
+                        "y": 418.62
+                    },
+                    {
+                        "rel_time": 167.0,
+                        "type": "historical",
+                        "x": "2024-10-04T00:00:00",
+                        "y": 393.65
+                    },
+                    {
+                        "rel_time": 168.0,
+                        "type": "historical",
+                        "x": "2024-10-05T00:00:00",
+                        "y": 284.35
+                    },
+                    {
+                        "rel_time": 169.0,
+                        "type": "historical",
+                        "x": "2024-10-06T00:00:00",
+                        "y": 252.89
+                    },
+                    {
+                        "rel_time": 170.0,
+                        "type": "historical",
+                        "x": "2024-10-07T00:00:00",
+                        "y": 218.67
+                    },
+                    {
+                        "rel_time": 171.0,
+                        "type": "historical",
+                        "x": "2024-10-08T00:00:00",
+                        "y": 217.89
+                    },
+                    {
+                        "rel_time": 172.0,
+                        "type": "historical",
+                        "x": "2024-10-09T00:00:00",
+                        "y": 208.22
+                    },
+                    {
+                        "rel_time": 173.0,
+                        "type": "historical",
+                        "x": "2024-10-10T00:00:00",
+                        "y": 220.67
+                    },
+                    {
+                        "rel_time": 174.0,
+                        "type": "historical",
+                        "x": "2024-10-11T00:00:00",
+                        "y": 225.44
+                    },
+                    {
+                        "rel_time": 175.0,
+                        "type": "historical",
+                        "x": "2024-10-12T00:00:00",
+                        "y": 150.21
+                    },
+                    {
+                        "rel_time": 176.0,
+                        "type": "historical",
+                        "x": "2024-10-13T00:00:00",
+                        "y": 153.95
+                    },
+                    {
+                        "rel_time": 177.0,
+                        "type": "historical",
+                        "x": "2024-10-14T00:00:00",
+                        "y": 157.84
+                    },
+                    {
+                        "rel_time": 178.0,
+                        "type": "historical",
+                        "x": "2024-10-15T00:00:00",
+                        "y": 105.62
+                    },
+                    {
+                        "rel_time": 179.0,
+                        "type": "historical",
+                        "x": "2024-10-16T00:00:00",
+                        "y": 68.45
+                    },
+                    {
+                        "rel_time": 180.0,
+                        "type": "historical",
+                        "x": "2024-10-17T00:00:00",
+                        "y": 109.07
+                    },
+                    {
+                        "rel_time": 181.0,
+                        "type": "historical",
+                        "x": "2024-10-18T00:00:00",
+                        "y": 509.6
+                    },
+                    {
+                        "rel_time": 182.0,
+                        "type": "historical",
+                        "x": "2024-10-19T00:00:00",
+                        "y": 614.6
+                    },
+                    {
+                        "rel_time": 183.0,
+                        "type": "historical",
+                        "x": "2024-10-20T00:00:00",
+                        "y": 515.22
+                    },
+                    {
+                        "rel_time": 184.0,
+                        "type": "historical",
+                        "x": "2024-10-21T00:00:00",
+                        "y": 438.65
+                    },
+                    {
+                        "rel_time": 185.0,
+                        "type": "historical",
+                        "x": "2024-10-22T00:00:00",
+                        "y": 434.04
+                    },
+                    {
+                        "rel_time": 186.0,
+                        "type": "historical",
+                        "x": "2024-10-23T00:00:00",
+                        "y": 63.09
+                    },
+                    {
+                        "rel_time": 187.0,
+                        "type": "historical",
+                        "x": "2024-10-24T00:00:00",
+                        "y": 170.45
+                    },
+                    {
+                        "rel_time": 188.0,
+                        "type": "historical",
+                        "x": "2024-10-25T00:00:00",
+                        "y": 57.47
+                    },
+                    {
+                        "rel_time": 189.0,
+                        "type": "historical",
+                        "x": "2024-10-26T00:00:00",
+                        "y": 252.27
+                    },
+                    {
+                        "rel_time": 190.0,
+                        "type": "historical",
+                        "x": "2024-10-27T00:00:00",
+                        "y": 205.53
+                    },
+                    {
+                        "rel_time": 191.0,
+                        "type": "historical",
+                        "x": "2024-10-28T00:00:00",
+                        "y": 194.43
+                    },
+                    {
+                        "rel_time": 192.0,
+                        "type": "historical",
+                        "x": "2024-10-29T00:00:00",
+                        "y": 164.52
+                    },
+                    {
+                        "rel_time": 193.0,
+                        "type": "historical",
+                        "x": "2024-10-30T00:00:00",
+                        "y": 93.87
+                    },
+                    {
+                        "rel_time": 194.0,
+                        "type": "historical",
+                        "x": "2024-10-31T00:00:00",
+                        "y": 32.67
+                    },
+                    {
+                        "rel_time": 195.0,
+                        "type": "historical",
+                        "x": "2024-11-01T00:00:00",
+                        "y": 82.82
+                    },
+                    {
+                        "rel_time": 196.0,
+                        "type": "historical",
+                        "x": "2024-11-02T00:00:00",
+                        "y": 97.79
+                    },
+                    {
+                        "rel_time": 197.0,
+                        "type": "historical",
+                        "x": "2024-11-03T00:00:00",
+                        "y": 406.31
+                    },
+                    {
+                        "rel_time": 198.0,
+                        "type": "historical",
+                        "x": "2024-11-04T00:00:00",
+                        "y": 361.71
+                    },
+                    {
+                        "rel_time": 199.0,
+                        "type": "historical",
+                        "x": "2024-11-05T00:00:00",
+                        "y": 356.49
+                    },
+                    {
+                        "rel_time": 200.0,
+                        "type": "historical",
+                        "x": "2024-11-06T00:00:00",
+                        "y": 334.45
+                    },
+                    {
+                        "rel_time": 201.0,
+                        "type": "historical",
+                        "x": "2024-11-07T00:00:00",
+                        "y": 372.09
+                    },
+                    {
+                        "rel_time": 202.0,
+                        "type": "historical",
+                        "x": "2024-11-08T00:00:00",
+                        "y": 352.55
+                    },
+                    {
+                        "rel_time": 203.0,
+                        "type": "historical",
+                        "x": "2024-11-09T00:00:00",
+                        "y": 349.66
+                    },
+                    {
+                        "rel_time": 204.0,
+                        "type": "historical",
+                        "x": "2024-11-10T00:00:00",
+                        "y": 318.37
+                    },
+                    {
+                        "rel_time": 205.0,
+                        "type": "historical",
+                        "x": "2024-11-11T00:00:00",
+                        "y": 322.18
+                    },
+                    {
+                        "rel_time": 206.0,
+                        "type": "historical",
+                        "x": "2024-11-12T00:00:00",
+                        "y": 324.82
+                    },
+                    {
+                        "rel_time": 207.0,
+                        "type": "historical",
+                        "x": "2024-11-13T00:00:00",
+                        "y": 318.61
+                    },
+                    {
+                        "rel_time": 208.0,
+                        "type": "historical",
+                        "x": "2024-11-14T00:00:00",
+                        "y": 311.81
+                    },
+                    {
+                        "rel_time": 209.0,
+                        "type": "historical",
+                        "x": "2024-11-15T00:00:00",
+                        "y": 289.87
+                    },
+                    {
+                        "rel_time": 210.0,
+                        "type": "historical",
+                        "x": "2024-11-16T00:00:00",
+                        "y": 308.88
+                    },
+                    {
+                        "rel_time": 211.0,
+                        "type": "historical",
+                        "x": "2024-11-17T00:00:00",
+                        "y": 303.74
+                    },
+                    {
+                        "rel_time": 212.0,
+                        "type": "historical",
+                        "x": "2024-11-18T00:00:00",
+                        "y": 303.18
+                    },
+                    {
+                        "rel_time": 213.0,
+                        "type": "historical",
+                        "x": "2024-11-19T00:00:00",
+                        "y": 175.11
+                    },
+                    {
+                        "rel_time": 214.0,
+                        "type": "historical",
+                        "x": "2024-11-20T00:00:00",
+                        "y": 461.02
+                    },
+                    {
+                        "rel_time": 215.0,
+                        "type": "historical",
+                        "x": "2024-11-21T00:00:00",
+                        "y": 301.02
+                    },
+                    {
+                        "rel_time": 216.0,
+                        "type": "historical",
+                        "x": "2024-11-22T00:00:00",
+                        "y": 610.33
+                    },
+                    {
+                        "rel_time": 217.0,
+                        "type": "historical",
+                        "x": "2024-11-23T00:00:00",
+                        "y": 523.33
+                    },
+                    {
+                        "rel_time": 218.0,
+                        "type": "historical",
+                        "x": "2024-11-24T00:00:00",
+                        "y": 522.0
+                    },
+                    {
+                        "rel_time": 219.0,
+                        "type": "historical",
+                        "x": "2024-11-25T00:00:00",
+                        "y": 563.38
+                    },
+                    {
+                        "rel_time": 220.0,
+                        "type": "historical",
+                        "x": "2024-11-26T00:00:00",
+                        "y": 563.46
+                    },
+                    {
+                        "rel_time": 221.0,
+                        "type": "historical",
+                        "x": "2024-11-27T00:00:00",
+                        "y": 563.73
+                    },
+                    {
+                        "rel_time": 222.0,
+                        "type": "historical",
+                        "x": "2024-11-28T00:00:00",
+                        "y": 565.09
+                    },
+                    {
+                        "rel_time": 223.0,
+                        "type": "historical",
+                        "x": "2024-11-29T00:00:00",
+                        "y": 564.26
+                    },
+                    {
+                        "rel_time": 224.0,
+                        "type": "historical",
+                        "x": "2024-11-30T00:00:00",
+                        "y": 563.26
+                    },
+                    {
+                        "rel_time": 225.0,
+                        "type": "historical",
+                        "x": "2024-12-01T00:00:00",
+                        "y": 512.52
+                    },
+                    {
+                        "rel_time": 226.0,
+                        "type": "historical",
+                        "x": "2024-12-02T00:00:00",
+                        "y": 571.88
+                    },
+                    {
+                        "rel_time": 227.0,
+                        "type": "historical",
+                        "x": "2024-12-03T00:00:00",
+                        "y": 588.96
+                    },
+                    {
+                        "rel_time": 228.0,
+                        "type": "historical",
+                        "x": "2024-12-04T00:00:00",
+                        "y": 418.45
+                    },
+                    {
+                        "rel_time": 229.0,
+                        "type": "historical",
+                        "x": "2024-12-05T00:00:00",
+                        "y": 369.83
+                    },
+                    {
+                        "rel_time": 230.0,
+                        "type": "historical",
+                        "x": "2024-12-06T00:00:00",
+                        "y": 576.35
+                    },
+                    {
+                        "rel_time": 231.0,
+                        "type": "historical",
+                        "x": "2024-12-07T00:00:00",
+                        "y": 658.27
+                    },
+                    {
+                        "rel_time": 232.0,
+                        "type": "historical",
+                        "x": "2024-12-08T00:00:00",
+                        "y": 695.74
+                    },
+                    {
+                        "rel_time": 233.0,
+                        "type": "historical",
+                        "x": "2024-12-09T00:00:00",
+                        "y": 702.73
+                    },
+                    {
+                        "rel_time": 234.0,
+                        "type": "historical",
+                        "x": "2024-12-10T00:00:00",
+                        "y": 708.04
+                    },
+                    {
+                        "rel_time": 235.0,
+                        "type": "historical",
+                        "x": "2024-12-11T00:00:00",
+                        "y": 710.62
+                    },
+                    {
+                        "rel_time": 236.0,
+                        "type": "historical",
+                        "x": "2024-12-12T00:00:00",
+                        "y": 715.28
+                    },
+                    {
+                        "rel_time": 237.0,
+                        "type": "historical",
+                        "x": "2024-12-13T00:00:00",
+                        "y": 723.96
+                    },
+                    {
+                        "rel_time": 238.0,
+                        "type": "historical",
+                        "x": "2024-12-14T00:00:00",
+                        "y": 726.5
+                    },
+                    {
+                        "rel_time": 239.0,
+                        "type": "historical",
+                        "x": "2024-12-15T00:00:00",
+                        "y": 757.43
+                    },
+                    {
+                        "rel_time": 240.0,
+                        "type": "historical",
+                        "x": "2024-12-16T00:00:00",
+                        "y": 521.97
+                    },
+                    {
+                        "rel_time": 241.0,
+                        "type": "historical",
+                        "x": "2024-12-17T00:00:00",
+                        "y": 786.16
+                    },
+                    {
+                        "rel_time": 242.0,
+                        "type": "historical",
+                        "x": "2024-12-18T00:00:00",
+                        "y": 490.49
+                    },
+                    {
+                        "rel_time": 243.0,
+                        "type": "historical",
+                        "x": "2024-12-19T00:00:00",
+                        "y": 488.44
+                    },
+                    {
+                        "rel_time": 244.0,
+                        "type": "historical",
+                        "x": "2024-12-20T00:00:00",
+                        "y": 417.98
+                    },
+                    {
+                        "rel_time": 245.0,
+                        "type": "historical",
+                        "x": "2024-12-21T00:00:00",
+                        "y": 377.42
+                    },
+                    {
+                        "rel_time": 246.0,
+                        "type": "historical",
+                        "x": "2024-12-22T00:00:00",
+                        "y": 379.41
+                    },
+                    {
+                        "rel_time": 247.0,
+                        "type": "historical",
+                        "x": "2024-12-23T00:00:00",
+                        "y": 378.38
+                    },
+                    {
+                        "rel_time": 248.0,
+                        "type": "historical",
+                        "x": "2024-12-24T00:00:00",
+                        "y": 375.93
+                    },
+                    {
+                        "rel_time": 249.0,
+                        "type": "historical",
+                        "x": "2024-12-25T00:00:00",
+                        "y": 489.43
+                    },
+                    {
+                        "rel_time": 250.0,
+                        "type": "historical",
+                        "x": "2024-12-26T00:00:00",
+                        "y": 481.51
+                    },
+                    {
+                        "rel_time": 251.0,
+                        "type": "historical",
+                        "x": "2024-12-27T00:00:00",
+                        "y": 457.95
+                    },
+                    {
+                        "rel_time": 252.0,
+                        "type": "historical",
+                        "x": "2024-12-28T00:00:00",
+                        "y": 460.83
+                    },
+                    {
+                        "rel_time": 253.0,
+                        "type": "historical",
+                        "x": "2024-12-29T00:00:00",
+                        "y": 458.9
+                    },
+                    {
+                        "rel_time": 254.0,
+                        "type": "historical",
+                        "x": "2024-12-30T00:00:00",
+                        "y": 464.22
+                    },
+                    {
+                        "rel_time": 255.0,
+                        "type": "historical",
+                        "x": "2024-12-31T00:00:00",
+                        "y": 466.58
+                    },
+                    {
+                        "rel_time": 256.0,
+                        "type": "historical",
+                        "x": "2025-01-01T00:00:00",
+                        "y": 465.25
+                    },
+                    {
+                        "rel_time": 257.0,
+                        "type": "historical",
+                        "x": "2025-01-02T00:00:00",
+                        "y": 468.63
+                    },
+                    {
+                        "rel_time": 258.0,
+                        "type": "historical",
+                        "x": "2025-01-03T00:00:00",
+                        "y": 487.33
+                    },
+                    {
+                        "rel_time": 259.0,
+                        "type": "historical",
+                        "x": "2025-01-04T00:00:00",
+                        "y": 290.87
+                    },
+                    {
+                        "rel_time": 260.0,
+                        "type": "historical",
+                        "x": "2025-01-05T00:00:00",
+                        "y": 458.09
+                    },
+                    {
+                        "rel_time": 261.0,
+                        "type": "historical",
+                        "x": "2025-01-06T00:00:00",
+                        "y": 459.37
+                    },
+                    {
+                        "rel_time": 262.0,
+                        "type": "historical",
+                        "x": "2025-01-07T00:00:00",
+                        "y": 463.64
+                    },
+                    {
+                        "rel_time": 263.0,
+                        "type": "historical",
+                        "x": "2025-01-08T00:00:00",
+                        "y": 466.34
+                    },
+                    {
+                        "rel_time": 264.0,
+                        "type": "historical",
+                        "x": "2025-01-09T00:00:00",
+                        "y": 476.08
+                    },
+                    {
+                        "rel_time": 265.0,
+                        "type": "historical",
+                        "x": "2025-01-10T00:00:00",
+                        "y": 492.02
+                    },
+                    {
+                        "rel_time": 266.0,
+                        "type": "historical",
+                        "x": "2025-01-11T00:00:00",
+                        "y": 481.59
+                    },
+                    {
+                        "rel_time": 267.0,
+                        "type": "historical",
+                        "x": "2025-01-12T00:00:00",
+                        "y": 491.71
+                    },
+                    {
+                        "rel_time": 268.0,
+                        "type": "historical",
+                        "x": "2025-01-13T00:00:00",
+                        "y": 507.75
+                    },
+                    {
+                        "rel_time": 269.0,
+                        "type": "historical",
+                        "x": "2025-01-14T00:00:00",
+                        "y": 781.21
+                    },
+                    {
+                        "rel_time": 270.0,
+                        "type": "historical",
+                        "x": "2025-01-15T00:00:00",
+                        "y": 804.85
+                    },
+                    {
+                        "rel_time": 271.0,
+                        "type": "historical",
+                        "x": "2025-01-16T00:00:00",
+                        "y": 713.24
+                    },
+                    {
+                        "rel_time": 272.0,
+                        "type": "historical",
+                        "x": "2025-01-17T00:00:00",
+                        "y": 740.8
+                    },
+                    {
+                        "rel_time": 273.0,
+                        "type": "historical",
+                        "x": "2025-01-18T00:00:00",
+                        "y": 769.01
+                    },
+                    {
+                        "rel_time": 274.0,
+                        "type": "historical",
+                        "x": "2025-01-19T00:00:00",
+                        "y": 823.41
+                    },
+                    {
+                        "rel_time": 275.0,
+                        "type": "historical",
+                        "x": "2025-01-20T00:00:00",
+                        "y": 944.19
+                    },
+                    {
+                        "rel_time": 276.0,
+                        "type": "historical",
+                        "x": "2025-01-21T00:00:00",
+                        "y": 176.8
+                    },
+                    {
+                        "rel_time": 277.0,
+                        "type": "historical",
+                        "x": "2025-01-22T00:00:00",
+                        "y": 913.86
+                    },
+                    {
+                        "rel_time": 278.0,
+                        "type": "historical",
+                        "x": "2025-01-23T00:00:00",
+                        "y": 925.31
+                    },
+                    {
+                        "rel_time": 279.0,
+                        "type": "historical",
+                        "x": "2025-01-24T00:00:00",
+                        "y": 1002.83
+                    },
+                    {
+                        "rel_time": 280.0,
+                        "type": "historical",
+                        "x": "2025-01-25T00:00:00",
+                        "y": 946.12
+                    },
+                    {
+                        "rel_time": 281.0,
+                        "type": "historical",
+                        "x": "2025-01-26T00:00:00",
+                        "y": 970.2
+                    },
+                    {
+                        "rel_time": 282.0,
+                        "type": "historical",
+                        "x": "2025-01-27T00:00:00",
+                        "y": 1044.17
+                    },
+                    {
+                        "rel_time": 283.0,
+                        "type": "historical",
+                        "x": "2025-01-28T00:00:00",
+                        "y": 1074.04
+                    },
+                    {
+                        "rel_time": 284.0,
+                        "type": "historical",
+                        "x": "2025-01-29T00:00:00",
+                        "y": 1212.9
+                    },
+                    {
+                        "rel_time": 285.0,
+                        "type": "historical",
+                        "x": "2025-01-30T00:00:00",
+                        "y": 1225.62
+                    },
+                    {
+                        "rel_time": 286.0,
+                        "type": "historical",
+                        "x": "2025-01-31T00:00:00",
+                        "y": 1279.46
+                    },
+                    {
+                        "rel_time": 287.0,
+                        "type": "historical",
+                        "x": "2025-02-01T00:00:00",
+                        "y": 1345.61
+                    },
+                    {
+                        "rel_time": 288.0,
+                        "type": "historical",
+                        "x": "2025-02-02T00:00:00",
+                        "y": 1349.56
+                    },
+                    {
+                        "rel_time": 289.0,
+                        "type": "historical",
+                        "x": "2025-02-03T00:00:00",
+                        "y": 1345.78
+                    },
+                    {
+                        "rel_time": 290.0,
+                        "type": "historical",
+                        "x": "2025-02-04T00:00:00",
+                        "y": 1248.7
+                    },
+                    {
+                        "rel_time": 291.0,
+                        "type": "historical",
+                        "x": "2025-02-05T00:00:00",
+                        "y": 1549.81
+                    },
+                    {
+                        "rel_time": 292.0,
+                        "type": "historical",
+                        "x": "2025-02-06T00:00:00",
+                        "y": 1166.46
+                    },
+                    {
+                        "rel_time": 293.0,
+                        "type": "historical",
+                        "x": "2025-02-07T00:00:00",
+                        "y": 580.74
+                    },
+                    {
+                        "rel_time": 294.0,
+                        "type": "historical",
+                        "x": "2025-02-08T00:00:00",
+                        "y": 743.83
+                    },
+                    {
+                        "rel_time": 295.0,
+                        "type": "historical",
+                        "x": "2025-02-09T00:00:00",
+                        "y": 818.89
+                    },
+                    {
+                        "rel_time": 296.0,
+                        "type": "historical",
+                        "x": "2025-02-10T00:00:00",
+                        "y": 736.09
+                    },
+                    {
+                        "rel_time": 297.0,
+                        "type": "historical",
+                        "x": "2025-02-11T00:00:00",
+                        "y": 834.68
+                    },
+                    {
+                        "rel_time": 298.0,
+                        "type": "historical",
+                        "x": "2025-02-12T00:00:00",
+                        "y": 745.92
+                    },
+                    {
+                        "rel_time": 299.0,
+                        "type": "historical",
+                        "x": "2025-02-13T00:00:00",
+                        "y": 647.11
+                    },
+                    {
+                        "rel_time": 300.0,
+                        "type": "historical",
+                        "x": "2025-02-14T00:00:00",
+                        "y": 238.45
+                    },
+                    {
+                        "rel_time": 301.0,
+                        "type": "historical",
+                        "x": "2025-02-15T00:00:00",
+                        "y": 690.7
+                    },
+                    {
+                        "rel_time": 302.0,
+                        "type": "historical",
+                        "x": "2025-02-16T00:00:00",
+                        "y": 694.3
+                    },
+                    {
+                        "rel_time": 303.0,
+                        "type": "historical",
+                        "x": "2025-02-17T00:00:00",
+                        "y": 690.38
+                    },
+                    {
+                        "rel_time": 304.0,
+                        "type": "historical",
+                        "x": "2025-02-18T00:00:00",
+                        "y": 677.29
+                    },
+                    {
+                        "rel_time": 305.0,
+                        "type": "historical",
+                        "x": "2025-02-19T00:00:00",
+                        "y": 706.8
+                    },
+                    {
+                        "rel_time": 306.0,
+                        "type": "historical",
+                        "x": "2025-02-20T00:00:00",
+                        "y": 715.1
+                    },
+                    {
+                        "rel_time": 307.0,
+                        "type": "historical",
+                        "x": "2025-02-21T00:00:00",
+                        "y": 459.83
+                    },
+                    {
+                        "rel_time": 308.0,
+                        "type": "historical",
+                        "x": "2025-02-22T00:00:00",
+                        "y": 724.21
+                    },
+                    {
+                        "rel_time": 309.0,
+                        "type": "historical",
+                        "x": "2025-02-23T00:00:00",
+                        "y": 704.08
+                    },
+                    {
+                        "rel_time": 310.0,
+                        "type": "historical",
+                        "x": "2025-02-24T00:00:00",
+                        "y": 698.77
+                    },
+                    {
+                        "rel_time": 311.0,
+                        "type": "historical",
+                        "x": "2025-02-25T00:00:00",
+                        "y": 695.01
+                    },
+                    {
+                        "rel_time": 312.0,
+                        "type": "historical",
+                        "x": "2025-02-26T00:00:00",
+                        "y": 715.5
+                    },
+                    {
+                        "rel_time": 313.0,
+                        "type": "historical",
+                        "x": "2025-02-27T00:00:00",
+                        "y": 727.26
+                    },
+                    {
+                        "rel_time": 314.0,
+                        "type": "historical",
+                        "x": "2025-02-28T00:00:00",
+                        "y": 750.57
+                    },
+                    {
+                        "rel_time": 315.0,
+                        "type": "historical",
+                        "x": "2025-03-01T00:00:00",
+                        "y": 746.54
+                    },
+                    {
+                        "rel_time": 316.0,
+                        "type": "historical",
+                        "x": "2025-03-02T00:00:00",
+                        "y": 742.89
+                    },
+                    {
+                        "rel_time": 317.0,
+                        "type": "historical",
+                        "x": "2025-03-03T00:00:00",
+                        "y": 735.41
+                    },
+                    {
+                        "rel_time": 318.0,
+                        "type": "historical",
+                        "x": "2025-03-04T00:00:00",
+                        "y": 743.77
+                    },
+                    {
+                        "rel_time": 319.0,
+                        "type": "historical",
+                        "x": "2025-03-05T00:00:00",
+                        "y": 783.06
+                    },
+                    {
+                        "rel_time": 320.0,
+                        "type": "historical",
+                        "x": "2025-03-06T00:00:00",
+                        "y": 788.8
+                    },
+                    {
+                        "rel_time": 321.0,
+                        "type": "historical",
+                        "x": "2025-03-07T00:00:00",
+                        "y": 782.88
+                    },
+                    {
+                        "rel_time": 322.0,
+                        "type": "historical",
+                        "x": "2025-03-08T00:00:00",
+                        "y": 469.73
+                    },
+                    {
+                        "rel_time": 323.0,
+                        "type": "historical",
+                        "x": "2025-03-09T00:00:00",
+                        "y": 715.93
+                    },
+                    {
+                        "rel_time": 324.0,
+                        "type": "historical",
+                        "x": "2025-03-10T00:00:00",
+                        "y": 518.32
+                    },
+                    {
+                        "rel_time": 325.0,
+                        "type": "historical",
+                        "x": "2025-03-11T00:00:00",
+                        "y": 283.28
+                    },
+                    {
+                        "rel_time": 326.0,
+                        "type": "historical",
+                        "x": "2025-03-12T00:00:00",
+                        "y": 289.93
+                    },
+                    {
+                        "rel_time": 327.0,
+                        "type": "historical",
+                        "x": "2025-03-13T00:00:00",
+                        "y": 292.29
+                    },
+                    {
+                        "rel_time": 328.0,
+                        "type": "historical",
+                        "x": "2025-03-14T00:00:00",
+                        "y": 293.13
+                    },
+                    {
+                        "rel_time": 329.0,
+                        "type": "historical",
+                        "x": "2025-03-15T00:00:00",
+                        "y": 292.13
+                    },
+                    {
+                        "rel_time": 330.0,
+                        "type": "historical",
+                        "x": "2025-03-16T00:00:00",
+                        "y": 288.26
+                    },
+                    {
+                        "rel_time": 331.0,
+                        "type": "historical",
+                        "x": "2025-03-17T00:00:00",
+                        "y": 290.68
+                    },
+                    {
+                        "rel_time": 332.0,
+                        "type": "historical",
+                        "x": "2025-03-18T00:00:00",
+                        "y": 295.17
+                    },
+                    {
+                        "rel_time": 333.0,
+                        "type": "historical",
+                        "x": "2025-03-19T00:00:00",
+                        "y": 321.29
+                    },
+                    {
+                        "rel_time": 334.0,
+                        "type": "historical",
+                        "x": "2025-03-20T00:00:00",
+                        "y": 316.54
+                    },
+                    {
+                        "rel_time": 335.0,
+                        "type": "historical",
+                        "x": "2025-03-21T00:00:00",
+                        "y": 322.58
+                    },
+                    {
+                        "rel_time": 336.0,
+                        "type": "historical",
+                        "x": "2025-03-22T00:00:00",
+                        "y": 318.25
+                    },
+                    {
+                        "rel_time": 337.0,
+                        "type": "historical",
+                        "x": "2025-03-23T00:00:00",
+                        "y": 304.36
+                    },
+                    {
+                        "rel_time": 338.0,
+                        "type": "historical",
+                        "x": "2025-03-24T00:00:00",
+                        "y": 315.14
+                    },
+                    {
+                        "rel_time": 339.0,
+                        "type": "historical",
+                        "x": "2025-03-25T00:00:00",
+                        "y": 318.2
+                    },
+                    {
+                        "rel_time": 340.0,
+                        "type": "historical",
+                        "x": "2025-03-26T00:00:00",
+                        "y": 333.14
+                    },
+                    {
+                        "rel_time": 341.0,
+                        "type": "historical",
+                        "x": "2025-03-27T00:00:00",
+                        "y": 317.47
+                    },
+                    {
+                        "rel_time": 342.0,
+                        "type": "historical",
+                        "x": "2025-03-28T00:00:00",
+                        "y": 314.24
+                    },
+                    {
+                        "rel_time": 343.0,
+                        "type": "historical",
+                        "x": "2025-03-29T00:00:00",
+                        "y": 313.92
+                    },
+                    {
+                        "rel_time": 344.0,
+                        "type": "historical",
+                        "x": "2025-03-30T00:00:00",
+                        "y": 314.23
+                    },
+                    {
+                        "rel_time": 345.0,
+                        "type": "historical",
+                        "x": "2025-03-31T00:00:00",
+                        "y": 316.21
+                    },
+                    {
+                        "rel_time": 346.0,
+                        "type": "historical",
+                        "x": "2025-04-01T00:00:00",
+                        "y": 326.54
+                    },
+                    {
+                        "rel_time": 347.0,
+                        "type": "historical",
+                        "x": "2025-04-02T00:00:00",
+                        "y": 323.37
+                    },
+                    {
+                        "rel_time": 348.0,
+                        "type": "historical",
+                        "x": "2025-04-03T00:00:00",
+                        "y": 294.55
+                    },
+                    {
+                        "rel_time": 349.0,
+                        "type": "historical",
+                        "x": "2025-04-04T00:00:00",
+                        "y": 321.22
+                    },
+                    {
+                        "rel_time": 350.0,
+                        "type": "historical",
+                        "x": "2025-04-05T00:00:00",
+                        "y": 295.28
+                    },
+                    {
+                        "rel_time": 351.0,
+                        "type": "historical",
+                        "x": "2025-04-06T00:00:00",
+                        "y": 290.46
+                    },
+                    {
+                        "rel_time": 352.0,
+                        "type": "historical",
+                        "x": "2025-04-07T00:00:00",
+                        "y": 597.29
+                    },
+                    {
+                        "rel_time": 353.0,
+                        "type": "historical",
+                        "x": "2025-04-08T00:00:00",
+                        "y": 521.26
+                    },
+                    {
+                        "rel_time": 354.0,
+                        "type": "historical",
+                        "x": "2025-04-09T00:00:00",
+                        "y": 486.97
+                    },
+                    {
+                        "rel_time": 355.0,
+                        "type": "historical",
+                        "x": "2025-04-10T00:00:00",
+                        "y": 422.91
+                    },
+                    {
+                        "rel_time": 356.0,
+                        "type": "historical",
+                        "x": "2025-04-11T00:00:00",
+                        "y": 355.75
+                    },
+                    {
+                        "rel_time": 357.0,
+                        "type": "historical",
+                        "x": "2025-04-12T00:00:00",
+                        "y": 626.39
+                    },
+                    {
+                        "rel_time": 358.0,
+                        "type": "historical",
+                        "x": "2025-04-13T00:00:00",
+                        "y": 574.29
+                    },
+                    {
+                        "rel_time": 359.0,
+                        "type": "historical",
+                        "x": "2025-04-14T00:00:00",
+                        "y": 783.85
+                    },
+                    {
+                        "rel_time": 360.0,
+                        "type": "historical",
+                        "x": "2025-04-15T00:00:00",
+                        "y": 790.15
+                    },
+                    {
+                        "rel_time": 361.0,
+                        "type": "historical",
+                        "x": "2025-04-16T00:00:00",
+                        "y": 788.73
+                    },
+                    {
+                        "rel_time": 362.0,
+                        "type": "historical",
+                        "x": "2025-04-17T00:00:00",
+                        "y": 916.81
+                    },
+                    {
+                        "rel_time": 363.0,
+                        "type": "historical",
+                        "x": "2025-04-18T00:00:00",
+                        "y": 790.87
+                    },
+                    {
+                        "rel_time": 364.0,
+                        "type": "historical",
+                        "x": "2025-04-19T00:00:00",
+                        "y": 94.01
+                    },
+                    {
+                        "rel_time": 365.0,
+                        "type": "historical",
+                        "x": "2025-04-20T00:00:00",
+                        "y": 120.29
+                    },
+                    {
+                        "rel_time": 366.0,
+                        "type": "historical",
+                        "x": "2025-04-21T00:00:00",
+                        "y": 1.26
+                    },
+                    {
+                        "rel_time": 367.0,
+                        "type": "historical",
+                        "x": "2025-04-22T00:00:00",
+                        "y": 272.89
+                    },
+                    {
+                        "rel_time": 368.0,
+                        "type": "historical",
+                        "x": "2025-04-23T00:00:00",
+                        "y": 283.17
+                    },
+                    {
+                        "rel_time": 369.0,
+                        "type": "historical",
+                        "x": "2025-04-24T00:00:00",
+                        "y": 283.6
+                    },
+                    {
+                        "rel_time": 370.0,
+                        "type": "historical",
+                        "x": "2025-04-25T00:00:00",
+                        "y": 285.32
+                    },
+                    {
+                        "rel_time": 371.0,
+                        "type": "historical",
+                        "x": "2025-04-26T00:00:00",
+                        "y": 281.74
+                    },
+                    {
+                        "rel_time": 372.0,
+                        "type": "historical",
+                        "x": "2025-04-27T00:00:00",
+                        "y": 289.07
+                    },
+                    {
+                        "rel_time": 373.0,
+                        "type": "historical",
+                        "x": "2025-04-28T00:00:00",
+                        "y": 292.77
+                    },
+                    {
+                        "rel_time": 374.0,
+                        "type": "historical",
+                        "x": "2025-04-29T00:00:00",
+                        "y": 293.48
+                    },
+                    {
+                        "rel_time": 375.0,
+                        "type": "historical",
+                        "x": "2025-04-30T00:00:00",
+                        "y": 290.93
+                    },
+                    {
+                        "rel_time": 376.0,
+                        "type": "historical",
+                        "x": "2025-05-01T00:00:00",
+                        "y": 321.25
+                    },
+                    {
+                        "rel_time": 377.0,
+                        "type": "historical",
+                        "x": "2025-05-02T00:00:00",
+                        "y": 293.11
+                    },
+                    {
+                        "rel_time": 378.0,
+                        "type": "historical",
+                        "x": "2025-05-03T00:00:00",
+                        "y": 322.67
+                    },
+                    {
+                        "rel_time": 379.0,
+                        "type": "historical",
+                        "x": "2025-05-04T00:00:00",
+                        "y": 338.88
+                    },
+                    {
+                        "rel_time": 380.0,
+                        "type": "historical",
+                        "x": "2025-05-05T00:00:00",
+                        "y": 342.35
+                    },
+                    {
+                        "rel_time": 381.0,
+                        "type": "historical",
+                        "x": "2025-05-06T00:00:00",
+                        "y": 384.47
+                    },
+                    {
+                        "rel_time": 382.0,
+                        "type": "historical",
+                        "x": "2025-05-07T00:00:00",
+                        "y": 391.65
+                    },
+                    {
+                        "rel_time": 383.0,
+                        "type": "historical",
+                        "x": "2025-05-08T00:00:00",
+                        "y": 391.22
+                    },
+                    {
+                        "rel_time": 384.0,
+                        "type": "historical",
+                        "x": "2025-05-09T00:00:00",
+                        "y": 380.29
+                    },
+                    {
+                        "rel_time": 385.0,
+                        "type": "historical",
+                        "x": "2025-05-10T00:00:00",
+                        "y": 389.68
+                    },
+                    {
+                        "rel_time": 386.0,
+                        "type": "historical",
+                        "x": "2025-05-11T00:00:00",
+                        "y": 409.11
+                    },
+                    {
+                        "rel_time": 387.0,
+                        "type": "historical",
+                        "x": "2025-05-12T00:00:00",
+                        "y": 410.96
+                    },
+                    {
+                        "rel_time": 388.0,
+                        "type": "historical",
+                        "x": "2025-05-13T00:00:00",
+                        "y": 412.14
+                    },
+                    {
+                        "rel_time": 389.0,
+                        "type": "historical",
+                        "x": "2025-05-14T00:00:00",
+                        "y": 422.69
+                    },
+                    {
+                        "rel_time": 390.0,
+                        "type": "historical",
+                        "x": "2025-05-15T00:00:00",
+                        "y": 427.63
+                    },
+                    {
+                        "rel_time": 391.0,
+                        "type": "historical",
+                        "x": "2025-05-16T00:00:00",
+                        "y": 103.77
+                    },
+                    {
+                        "rel_time": 392.0,
+                        "type": "historical",
+                        "x": "2025-05-17T00:00:00",
+                        "y": 293.35
+                    },
+                    {
+                        "rel_time": 393.0,
+                        "type": "historical",
+                        "x": "2025-05-18T00:00:00",
+                        "y": 296.12
+                    },
+                    {
+                        "rel_time": 394.0,
+                        "type": "historical",
+                        "x": "2025-05-19T00:00:00",
+                        "y": 296.2
+                    },
+                    {
+                        "rel_time": 395.0,
+                        "type": "historical",
+                        "x": "2025-05-20T00:00:00",
+                        "y": 297.33
+                    },
+                    {
+                        "rel_time": 396.0,
+                        "type": "historical",
+                        "x": "2025-05-21T00:00:00",
+                        "y": 297.19
+                    },
+                    {
+                        "rel_time": 397.0,
+                        "type": "historical",
+                        "x": "2025-05-22T00:00:00",
+                        "y": 278.58
+                    },
+                    {
+                        "rel_time": 398.0,
+                        "type": "historical",
+                        "x": "2025-05-23T00:00:00",
+                        "y": 287.03
+                    },
+                    {
+                        "rel_time": 399.0,
+                        "type": "historical",
+                        "x": "2025-05-24T00:00:00",
+                        "y": 351.8
+                    },
+                    {
+                        "rel_time": 400.0,
+                        "type": "historical",
+                        "x": "2025-05-25T00:00:00",
+                        "y": 322.4
+                    },
+                    {
+                        "rel_time": 401.0,
+                        "type": "historical",
+                        "x": "2025-05-26T00:00:00",
+                        "y": 509.21
+                    },
+                    {
+                        "rel_time": 402.0,
+                        "type": "historical",
+                        "x": "2025-05-27T00:00:00",
+                        "y": 344.5
+                    },
+                    {
+                        "rel_time": 403.0,
+                        "type": "historical",
+                        "x": "2025-05-28T00:00:00",
+                        "y": 333.55
+                    },
+                    {
+                        "rel_time": 404.0,
+                        "type": "historical",
+                        "x": "2025-05-29T00:00:00",
+                        "y": 290.3
+                    },
+                    {
+                        "rel_time": 405.0,
+                        "type": "historical",
+                        "x": "2025-05-30T00:00:00",
+                        "y": 358.2
+                    },
+                    {
+                        "rel_time": 406.0,
+                        "type": "historical",
+                        "x": "2025-05-31T00:00:00",
+                        "y": 320.41
+                    },
+                    {
+                        "rel_time": 407.0,
+                        "type": "historical",
+                        "x": "2025-06-01T00:00:00",
+                        "y": 320.68
+                    },
+                    {
+                        "rel_time": 408.0,
+                        "type": "historical",
+                        "x": "2025-06-02T00:00:00",
+                        "y": 329.6
+                    },
+                    {
+                        "rel_time": 409.0,
+                        "type": "historical",
+                        "x": "2025-06-03T00:00:00",
+                        "y": 323.37
+                    },
+                    {
+                        "rel_time": 410.0,
+                        "type": "historical",
+                        "x": "2025-06-04T00:00:00",
+                        "y": 325.01
+                    },
+                    {
+                        "rel_time": 411.0,
+                        "type": "historical",
+                        "x": "2025-06-05T00:00:00",
+                        "y": 329.2
+                    },
+                    {
+                        "rel_time": 412.0,
+                        "type": "historical",
+                        "x": "2025-06-06T00:00:00",
+                        "y": 325.92
+                    },
+                    {
+                        "rel_time": 413.0,
+                        "type": "historical",
+                        "x": "2025-06-07T00:00:00",
+                        "y": 320.34
+                    },
+                    {
+                        "rel_time": 414.0,
+                        "type": "historical",
+                        "x": "2025-06-08T00:00:00",
+                        "y": 322.31
+                    },
+                    {
+                        "rel_time": 415.0,
+                        "type": "historical",
+                        "x": "2025-06-09T00:00:00",
+                        "y": 315.32
+                    },
+                    {
+                        "rel_time": 416.0,
+                        "type": "historical",
+                        "x": "2025-06-10T00:00:00",
+                        "y": 323.18
+                    },
+                    {
+                        "rel_time": 417.0,
+                        "type": "historical",
+                        "x": "2025-06-11T00:00:00",
+                        "y": 287.64
+                    },
+                    {
+                        "rel_time": 418.0,
+                        "type": "historical",
+                        "x": "2025-06-12T00:00:00",
+                        "y": 275.22
+                    },
+                    {
+                        "rel_time": 419.0,
+                        "type": "historical",
+                        "x": "2025-06-13T00:00:00",
+                        "y": 493.37
+                    },
+                    {
+                        "rel_time": 420.0,
+                        "type": "historical",
+                        "x": "2025-06-14T00:00:00",
+                        "y": 377.72
+                    },
+                    {
+                        "rel_time": 421.0,
+                        "type": "historical",
+                        "x": "2025-06-15T00:00:00",
+                        "y": 199.07
+                    },
+                    {
+                        "rel_time": 422.0,
+                        "type": "historical",
+                        "x": "2025-06-16T00:00:00",
+                        "y": 55.2
+                    },
+                    {
+                        "rel_time": 423.0,
+                        "type": "historical",
+                        "x": "2025-06-17T00:00:00",
+                        "y": 308.31
+                    },
+                    {
+                        "rel_time": 424.0,
+                        "type": "historical",
+                        "x": "2025-06-18T00:00:00",
+                        "y": 322.07
+                    },
+                    {
+                        "rel_time": 425.0,
+                        "type": "historical",
+                        "x": "2025-06-19T00:00:00",
+                        "y": 324.95
+                    },
+                    {
+                        "rel_time": 426.0,
+                        "type": "historical",
+                        "x": "2025-06-20T00:00:00",
+                        "y": 324.9
+                    },
+                    {
+                        "rel_time": 427.0,
+                        "type": "historical",
+                        "x": "2025-06-21T00:00:00",
+                        "y": 338.53
+                    },
+                    {
+                        "rel_time": 428.0,
+                        "type": "historical",
+                        "x": "2025-06-22T00:00:00",
+                        "y": 354.31
+                    },
+                    {
+                        "rel_time": 429.0,
+                        "type": "historical",
+                        "x": "2025-06-23T00:00:00",
+                        "y": 356.65
+                    }
+                ],
+                "label": "Historical Production (Cleaned)",
+                "pointRadius": 4,
+                "pointStyle": "circle",
+                "showLine": false
+            },
+            {
+                "backgroundColor": "rgba(255, 99, 132, 0.2)",
+                "borderColor": "rgb(255, 99, 132)",
+                "borderDash": [
+                    5,
+                    5
+                ],
+                "data": [
+                    {
+                        "rel_time": 0.0,
+                        "type": "historical_fit",
+                        "x": "2024-04-20T00:00:00",
+                        "y": 413.27759435129747
+                    },
+                    {
+                        "rel_time": 3.663316582914573,
+                        "type": "historical_fit",
+                        "x": "2024-04-23T15:55:10.552763819",
+                        "y": 413.2775928373308
+                    },
+                    {
+                        "rel_time": 7.326633165829146,
+                        "type": "historical_fit",
+                        "x": "2024-04-27T07:50:21.105527638",
+                        "y": 413.2775913233642
+                    },
+                    {
+                        "rel_time": 10.989949748743719,
+                        "type": "historical_fit",
+                        "x": "2024-04-30T23:45:31.658291457",
+                        "y": 413.2775898093975
+                    },
+                    {
+                        "rel_time": 14.653266331658292,
+                        "type": "historical_fit",
+                        "x": "2024-05-04T15:40:42.211055276",
+                        "y": 413.27758829543086
+                    },
+                    {
+                        "rel_time": 18.316582914572866,
+                        "type": "historical_fit",
+                        "x": "2024-05-08T07:35:52.763819095",
+                        "y": 413.27758678146427
+                    },
+                    {
+                        "rel_time": 21.979899497487438,
+                        "type": "historical_fit",
+                        "x": "2024-05-11T23:31:03.316582914",
+                        "y": 413.27758526749767
+                    },
+                    {
+                        "rel_time": 25.643216080402013,
+                        "type": "historical_fit",
+                        "x": "2024-05-15T15:26:13.869346734",
+                        "y": 413.27758375353113
+                    },
+                    {
+                        "rel_time": 29.306532663316585,
+                        "type": "historical_fit",
+                        "x": "2024-05-19T07:21:24.422110553",
+                        "y": 413.2775822395645
+                    },
+                    {
+                        "rel_time": 32.969849246231156,
+                        "type": "historical_fit",
+                        "x": "2024-05-22T23:16:34.974874372",
+                        "y": 413.2775807255979
+                    },
+                    {
+                        "rel_time": 36.63316582914573,
+                        "type": "historical_fit",
+                        "x": "2024-05-26T15:11:45.527638191",
+                        "y": 413.27757921163135
+                    },
+                    {
+                        "rel_time": 40.29648241206031,
+                        "type": "historical_fit",
+                        "x": "2024-05-30T07:06:56.080402010",
+                        "y": 413.27757769766487
+                    },
+                    {
+                        "rel_time": 43.959798994974875,
+                        "type": "historical_fit",
+                        "x": "2024-06-02T23:02:06.633165829",
+                        "y": 413.27757618369833
+                    },
+                    {
+                        "rel_time": 47.62311557788945,
+                        "type": "historical_fit",
+                        "x": "2024-06-06T14:57:17.185929648",
+                        "y": 413.27757466973173
+                    },
+                    {
+                        "rel_time": 51.286432160804026,
+                        "type": "historical_fit",
+                        "x": "2024-06-10T06:52:27.738693468",
+                        "y": 413.27757315576525
+                    },
+                    {
+                        "rel_time": 54.949748743718594,
+                        "type": "historical_fit",
+                        "x": "2024-06-13T22:47:38.291457286",
+                        "y": 413.2775716417987
+                    },
+                    {
+                        "rel_time": 58.61306532663317,
+                        "type": "historical_fit",
+                        "x": "2024-06-17T14:42:48.844221106",
+                        "y": 413.2775701278323
+                    },
+                    {
+                        "rel_time": 62.276381909547744,
+                        "type": "historical_fit",
+                        "x": "2024-06-21T06:37:59.396984925",
+                        "y": 413.2775686138658
+                    },
+                    {
+                        "rel_time": 65.93969849246231,
+                        "type": "historical_fit",
+                        "x": "2024-06-24T22:33:09.949748744",
+                        "y": 413.2775670998993
+                    },
+                    {
+                        "rel_time": 69.60301507537689,
+                        "type": "historical_fit",
+                        "x": "2024-06-28T14:28:20.502512563",
+                        "y": 413.2775655859328
+                    },
+                    {
+                        "rel_time": 73.26633165829146,
+                        "type": "historical_fit",
+                        "x": "2024-07-02T06:23:31.055276383",
+                        "y": 413.27756407196637
+                    },
+                    {
+                        "rel_time": 76.92964824120604,
+                        "type": "historical_fit",
+                        "x": "2024-07-05T22:18:41.608040201",
+                        "y": 413.27756255799994
+                    },
+                    {
+                        "rel_time": 80.59296482412061,
+                        "type": "historical_fit",
+                        "x": "2024-07-09T14:13:52.160804021",
+                        "y": 413.2775610440336
+                    },
+                    {
+                        "rel_time": 84.25628140703517,
+                        "type": "historical_fit",
+                        "x": "2024-07-13T06:09:02.713567839",
+                        "y": 413.2775595300671
+                    },
+                    {
+                        "rel_time": 87.91959798994975,
+                        "type": "historical_fit",
+                        "x": "2024-07-16T22:04:13.266331659",
+                        "y": 413.27755801610067
+                    },
+                    {
+                        "rel_time": 91.58291457286433,
+                        "type": "historical_fit",
+                        "x": "2024-07-20T13:59:23.819095478",
+                        "y": 413.2775565021343
+                    },
+                    {
+                        "rel_time": 95.2462311557789,
+                        "type": "historical_fit",
+                        "x": "2024-07-24T05:54:34.371859297",
+                        "y": 413.27755498816794
+                    },
+                    {
+                        "rel_time": 98.90954773869348,
+                        "type": "historical_fit",
+                        "x": "2024-07-27T21:49:44.924623115",
+                        "y": 413.27755347420157
+                    },
+                    {
+                        "rel_time": 102.57286432160805,
+                        "type": "historical_fit",
+                        "x": "2024-07-31T13:44:55.477386937",
+                        "y": 413.27755196023514
+                    },
+                    {
+                        "rel_time": 106.23618090452261,
+                        "type": "historical_fit",
+                        "x": "2024-08-04T05:40:06.030150754",
+                        "y": 413.27755044626883
+                    },
+                    {
+                        "rel_time": 109.89949748743719,
+                        "type": "historical_fit",
+                        "x": "2024-08-07T21:35:16.582914572",
+                        "y": 413.2775489323025
+                    },
+                    {
+                        "rel_time": 113.56281407035176,
+                        "type": "historical_fit",
+                        "x": "2024-08-11T13:30:27.135678392",
+                        "y": 413.2775474183362
+                    },
+                    {
+                        "rel_time": 117.22613065326634,
+                        "type": "historical_fit",
+                        "x": "2024-08-15T05:25:37.688442212",
+                        "y": 413.2775459043699
+                    },
+                    {
+                        "rel_time": 120.88944723618091,
+                        "type": "historical_fit",
+                        "x": "2024-08-18T21:20:48.241206032",
+                        "y": 413.27754439040353
+                    },
+                    {
+                        "rel_time": 124.55276381909549,
+                        "type": "historical_fit",
+                        "x": "2024-08-22T13:15:58.793969850",
+                        "y": 413.2775428764372
+                    },
+                    {
+                        "rel_time": 128.21608040201005,
+                        "type": "historical_fit",
+                        "x": "2024-08-26T05:11:09.346733668",
+                        "y": 413.27754136247097
+                    },
+                    {
+                        "rel_time": 131.87939698492463,
+                        "type": "historical_fit",
+                        "x": "2024-08-29T21:06:19.899497488",
+                        "y": 413.2775398485047
+                    },
+                    {
+                        "rel_time": 135.5427135678392,
+                        "type": "historical_fit",
+                        "x": "2024-09-02T13:01:30.452261306",
+                        "y": 413.2775383345385
+                    },
+                    {
+                        "rel_time": 139.20603015075378,
+                        "type": "historical_fit",
+                        "x": "2024-09-06T04:56:41.005025126",
+                        "y": 413.27753682057215
+                    },
+                    {
+                        "rel_time": 142.86934673366835,
+                        "type": "historical_fit",
+                        "x": "2024-09-09T20:51:51.557788946",
+                        "y": 413.27753530660596
+                    },
+                    {
+                        "rel_time": 146.53266331658293,
+                        "type": "historical_fit",
+                        "x": "2024-09-13T12:47:02.110552766",
+                        "y": 413.27753379263976
+                    },
+                    {
+                        "rel_time": 150.1959798994975,
+                        "type": "historical_fit",
+                        "x": "2024-09-17T04:42:12.663316584",
+                        "y": 413.27753227867356
+                    },
+                    {
+                        "rel_time": 153.85929648241208,
+                        "type": "historical_fit",
+                        "x": "2024-09-20T20:37:23.216080402",
+                        "y": 413.27753076470736
+                    },
+                    {
+                        "rel_time": 157.52261306532665,
+                        "type": "historical_fit",
+                        "x": "2024-09-24T12:32:33.768844222",
+                        "y": 413.2775292507411
+                    },
+                    {
+                        "rel_time": 161.18592964824123,
+                        "type": "historical_fit",
+                        "x": "2024-09-28T04:27:44.321608042",
+                        "y": 413.2775277367749
+                    },
+                    {
+                        "rel_time": 164.84924623115577,
+                        "type": "historical_fit",
+                        "x": "2024-10-01T20:22:54.874371858",
+                        "y": 413.2775262228088
+                    },
+                    {
+                        "rel_time": 168.51256281407035,
+                        "type": "historical_fit",
+                        "x": "2024-10-05T12:18:05.427135678",
+                        "y": 413.27752470884263
+                    },
+                    {
+                        "rel_time": 172.17587939698493,
+                        "type": "historical_fit",
+                        "x": "2024-10-09T04:13:15.979899498",
+                        "y": 413.2775231948765
+                    },
+                    {
+                        "rel_time": 175.8391959798995,
+                        "type": "historical_fit",
+                        "x": "2024-10-12T20:08:26.532663318",
+                        "y": 413.2775216809104
+                    },
+                    {
+                        "rel_time": 179.50251256281408,
+                        "type": "historical_fit",
+                        "x": "2024-10-16T12:03:37.085427136",
+                        "y": 413.27752016694416
+                    },
+                    {
+                        "rel_time": 183.16582914572865,
+                        "type": "historical_fit",
+                        "x": "2024-10-20T03:58:47.638190956",
+                        "y": 413.2775186529781
+                    },
+                    {
+                        "rel_time": 186.82914572864323,
+                        "type": "historical_fit",
+                        "x": "2024-10-23T19:53:58.190954776",
+                        "y": 413.277517139012
+                    },
+                    {
+                        "rel_time": 190.4924623115578,
+                        "type": "historical_fit",
+                        "x": "2024-10-27T11:49:08.743718594",
+                        "y": 413.2775156250459
+                    },
+                    {
+                        "rel_time": 194.15577889447238,
+                        "type": "historical_fit",
+                        "x": "2024-10-31T03:44:19.296482412",
+                        "y": 413.2775141110799
+                    },
+                    {
+                        "rel_time": 197.81909547738695,
+                        "type": "historical_fit",
+                        "x": "2024-11-03T19:39:29.849246230",
+                        "y": 413.27751259711374
+                    },
+                    {
+                        "rel_time": 201.48241206030153,
+                        "type": "historical_fit",
+                        "x": "2024-11-07T11:34:40.402010054",
+                        "y": 413.27751108314766
+                    },
+                    {
+                        "rel_time": 205.1457286432161,
+                        "type": "historical_fit",
+                        "x": "2024-11-11T03:29:50.954773874",
+                        "y": 413.27750956918163
+                    },
+                    {
+                        "rel_time": 208.80904522613068,
+                        "type": "historical_fit",
+                        "x": "2024-11-14T19:25:01.507537688",
+                        "y": 413.2775080552156
+                    },
+                    {
+                        "rel_time": 212.47236180904522,
+                        "type": "historical_fit",
+                        "x": "2024-11-18T11:20:12.060301508",
+                        "y": 413.27750654124964
+                    },
+                    {
+                        "rel_time": 216.1356783919598,
+                        "type": "historical_fit",
+                        "x": "2024-11-22T03:15:22.613065328",
+                        "y": 413.2775050272835
+                    },
+                    {
+                        "rel_time": 219.79899497487438,
+                        "type": "historical_fit",
+                        "x": "2024-11-25T19:10:33.165829144",
+                        "y": 413.2775035133175
+                    },
+                    {
+                        "rel_time": 223.46231155778895,
+                        "type": "historical_fit",
+                        "x": "2024-11-29T11:05:43.718592964",
+                        "y": 413.27750199935156
+                    },
+                    {
+                        "rel_time": 227.12562814070353,
+                        "type": "historical_fit",
+                        "x": "2024-12-03T03:00:54.271356784",
+                        "y": 413.2775004853856
+                    },
+                    {
+                        "rel_time": 230.7889447236181,
+                        "type": "historical_fit",
+                        "x": "2024-12-06T18:56:04.824120604",
+                        "y": 413.2774989714196
+                    },
+                    {
+                        "rel_time": 234.45226130653268,
+                        "type": "historical_fit",
+                        "x": "2024-12-10T10:51:15.376884424",
+                        "y": 413.2774974574536
+                    },
+                    {
+                        "rel_time": 238.11557788944725,
+                        "type": "historical_fit",
+                        "x": "2024-12-14T02:46:25.929648244",
+                        "y": 413.2774959434877
+                    },
+                    {
+                        "rel_time": 241.77889447236183,
+                        "type": "historical_fit",
+                        "x": "2024-12-17T18:41:36.482412064",
+                        "y": 413.27749442952177
+                    },
+                    {
+                        "rel_time": 245.4422110552764,
+                        "type": "historical_fit",
+                        "x": "2024-12-21T10:36:47.035175884",
+                        "y": 413.27749291555585
+                    },
+                    {
+                        "rel_time": 249.10552763819098,
+                        "type": "historical_fit",
+                        "x": "2024-12-25T02:31:57.587939700",
+                        "y": 413.27749140158994
+                    },
+                    {
+                        "rel_time": 252.76884422110555,
+                        "type": "historical_fit",
+                        "x": "2024-12-28T18:27:08.140703516",
+                        "y": 413.277489887624
+                    },
+                    {
+                        "rel_time": 256.4321608040201,
+                        "type": "historical_fit",
+                        "x": "2025-01-01T10:22:18.693467336",
+                        "y": 413.2774883736581
+                    },
+                    {
+                        "rel_time": 260.0954773869347,
+                        "type": "historical_fit",
+                        "x": "2025-01-05T02:17:29.246231156",
+                        "y": 413.27748685969226
+                    },
+                    {
+                        "rel_time": 263.75879396984925,
+                        "type": "historical_fit",
+                        "x": "2025-01-08T18:12:39.798994976",
+                        "y": 413.2774853457264
+                    },
+                    {
+                        "rel_time": 267.42211055276385,
+                        "type": "historical_fit",
+                        "x": "2025-01-12T10:07:50.351758800",
+                        "y": 413.27748383176055
+                    },
+                    {
+                        "rel_time": 271.0854271356784,
+                        "type": "historical_fit",
+                        "x": "2025-01-16T02:03:00.904522612",
+                        "y": 413.27748231779464
+                    },
+                    {
+                        "rel_time": 274.748743718593,
+                        "type": "historical_fit",
+                        "x": "2025-01-19T17:58:11.457286436",
+                        "y": 413.2774808038288
+                    },
+                    {
+                        "rel_time": 278.41206030150755,
+                        "type": "historical_fit",
+                        "x": "2025-01-23T09:53:22.010050252",
+                        "y": 413.277479289863
+                    },
+                    {
+                        "rel_time": 282.0753768844221,
+                        "type": "historical_fit",
+                        "x": "2025-01-27T01:48:32.562814068",
+                        "y": 413.2774777758972
+                    },
+                    {
+                        "rel_time": 285.7386934673367,
+                        "type": "historical_fit",
+                        "x": "2025-01-30T17:43:43.115577892",
+                        "y": 413.2774762619314
+                    },
+                    {
+                        "rel_time": 289.40201005025125,
+                        "type": "historical_fit",
+                        "x": "2025-02-03T09:38:53.668341712",
+                        "y": 413.2774747479655
+                    },
+                    {
+                        "rel_time": 293.06532663316585,
+                        "type": "historical_fit",
+                        "x": "2025-02-07T01:34:04.221105532",
+                        "y": 413.2774732339998
+                    },
+                    {
+                        "rel_time": 296.7286432160804,
+                        "type": "historical_fit",
+                        "x": "2025-02-10T17:29:14.773869348",
+                        "y": 413.277471720034
+                    },
+                    {
+                        "rel_time": 300.391959798995,
+                        "type": "historical_fit",
+                        "x": "2025-02-14T09:24:25.326633168",
+                        "y": 413.27747020606824
+                    },
+                    {
+                        "rel_time": 304.05527638190955,
+                        "type": "historical_fit",
+                        "x": "2025-02-18T01:19:35.879396984",
+                        "y": 413.27746869210256
+                    },
+                    {
+                        "rel_time": 307.71859296482415,
+                        "type": "historical_fit",
+                        "x": "2025-02-21T17:14:46.432160804",
+                        "y": 413.2774671781367
+                    },
+                    {
+                        "rel_time": 311.3819095477387,
+                        "type": "historical_fit",
+                        "x": "2025-02-25T09:09:56.984924624",
+                        "y": 413.277465664171
+                    },
+                    {
+                        "rel_time": 315.0452261306533,
+                        "type": "historical_fit",
+                        "x": "2025-03-01T01:05:07.537688444",
+                        "y": 413.27746415020533
+                    },
+                    {
+                        "rel_time": 318.70854271356785,
+                        "type": "historical_fit",
+                        "x": "2025-03-04T17:00:18.090452264",
+                        "y": 413.27746263623965
+                    },
+                    {
+                        "rel_time": 322.37185929648246,
+                        "type": "historical_fit",
+                        "x": "2025-03-08T08:55:28.643216084",
+                        "y": 413.27746112227396
+                    },
+                    {
+                        "rel_time": 326.035175879397,
+                        "type": "historical_fit",
+                        "x": "2025-03-12T00:50:39.195979900",
+                        "y": 413.2774596083082
+                    },
+                    {
+                        "rel_time": 329.69849246231155,
+                        "type": "historical_fit",
+                        "x": "2025-03-15T16:45:49.748743716",
+                        "y": 413.27745809434253
+                    },
+                    {
+                        "rel_time": 333.36180904522615,
+                        "type": "historical_fit",
+                        "x": "2025-03-19T08:41:00.301507536",
+                        "y": 413.2774565803769
+                    },
+                    {
+                        "rel_time": 337.0251256281407,
+                        "type": "historical_fit",
+                        "x": "2025-03-23T00:36:10.854271356",
+                        "y": 413.2774550664113
+                    },
+                    {
+                        "rel_time": 340.6884422110553,
+                        "type": "historical_fit",
+                        "x": "2025-03-26T16:31:21.407035180",
+                        "y": 413.27745355244565
+                    },
+                    {
+                        "rel_time": 344.35175879396985,
+                        "type": "historical_fit",
+                        "x": "2025-03-30T08:26:31.959798996",
+                        "y": 413.27745203847996
+                    },
+                    {
+                        "rel_time": 348.01507537688445,
+                        "type": "historical_fit",
+                        "x": "2025-04-03T00:21:42.512562820",
+                        "y": 413.27745052451434
+                    },
+                    {
+                        "rel_time": 351.678391959799,
+                        "type": "historical_fit",
+                        "x": "2025-04-06T16:16:53.065326636",
+                        "y": 413.27744901054876
+                    },
+                    {
+                        "rel_time": 355.3417085427136,
+                        "type": "historical_fit",
+                        "x": "2025-04-10T08:12:03.618090456",
+                        "y": 413.2774474965832
+                    },
+                    {
+                        "rel_time": 359.00502512562815,
+                        "type": "historical_fit",
+                        "x": "2025-04-14T00:07:14.170854272",
+                        "y": 413.2774459826176
+                    },
+                    {
+                        "rel_time": 362.66834170854275,
+                        "type": "historical_fit",
+                        "x": "2025-04-17T16:02:24.723618092",
+                        "y": 413.277444468652
+                    },
+                    {
+                        "rel_time": 366.3316582914573,
+                        "type": "historical_fit",
+                        "x": "2025-04-21T07:57:35.276381912",
+                        "y": 413.2774429546864
+                    },
+                    {
+                        "rel_time": 369.9949748743719,
+                        "type": "historical_fit",
+                        "x": "2025-04-24T23:52:45.829145728",
+                        "y": 413.2774414407209
+                    },
+                    {
+                        "rel_time": 373.65829145728645,
+                        "type": "historical_fit",
+                        "x": "2025-04-28T15:47:56.381909552",
+                        "y": 413.2774399267554
+                    },
+                    {
+                        "rel_time": 377.321608040201,
+                        "type": "historical_fit",
+                        "x": "2025-05-02T07:43:06.934673364",
+                        "y": 413.2774384127899
+                    },
+                    {
+                        "rel_time": 380.9849246231156,
+                        "type": "historical_fit",
+                        "x": "2025-05-05T23:38:17.487437188",
+                        "y": 413.2774368988243
+                    },
+                    {
+                        "rel_time": 384.64824120603015,
+                        "type": "historical_fit",
+                        "x": "2025-05-09T15:33:28.040201004",
+                        "y": 413.2774353848588
+                    },
+                    {
+                        "rel_time": 388.31155778894475,
+                        "type": "historical_fit",
+                        "x": "2025-05-13T07:28:38.592964824",
+                        "y": 413.27743387089333
+                    },
+                    {
+                        "rel_time": 391.9748743718593,
+                        "type": "historical_fit",
+                        "x": "2025-05-16T23:23:49.145728648",
+                        "y": 413.2774323569279
+                    },
+                    {
+                        "rel_time": 395.6381909547739,
+                        "type": "historical_fit",
+                        "x": "2025-05-20T15:18:59.698492460",
+                        "y": 413.2774308429624
+                    },
+                    {
+                        "rel_time": 399.30150753768845,
+                        "type": "historical_fit",
+                        "x": "2025-05-24T07:14:10.251256288",
+                        "y": 413.27742932899685
+                    },
+                    {
+                        "rel_time": 402.96482412060305,
+                        "type": "historical_fit",
+                        "x": "2025-05-27T23:09:20.804020108",
+                        "y": 413.27742781503144
+                    },
+                    {
+                        "rel_time": 406.6281407035176,
+                        "type": "historical_fit",
+                        "x": "2025-05-31T15:04:31.356783920",
+                        "y": 413.277426301066
+                    },
+                    {
+                        "rel_time": 410.2914572864322,
+                        "type": "historical_fit",
+                        "x": "2025-06-04T06:59:41.909547748",
+                        "y": 413.2774247871006
+                    },
+                    {
+                        "rel_time": 413.95477386934675,
+                        "type": "historical_fit",
+                        "x": "2025-06-07T22:54:52.462311560",
+                        "y": 413.2774232731352
+                    },
+                    {
+                        "rel_time": 417.61809045226136,
+                        "type": "historical_fit",
+                        "x": "2025-06-11T14:50:03.015075376",
+                        "y": 413.2774217591697
+                    },
+                    {
+                        "rel_time": 421.2814070351759,
+                        "type": "historical_fit",
+                        "x": "2025-06-15T06:45:13.567839200",
+                        "y": 413.2774202452043
+                    },
+                    {
+                        "rel_time": 424.94472361809045,
+                        "type": "historical_fit",
+                        "x": "2025-06-18T22:40:24.120603016",
+                        "y": 413.277418731239
+                    },
+                    {
+                        "rel_time": 428.60804020100505,
+                        "type": "historical_fit",
+                        "x": "2025-06-22T14:35:34.673366840",
+                        "y": 413.27741721727364
+                    },
+                    {
+                        "rel_time": 432.2713567839196,
+                        "type": "forecast",
+                        "x": "2025-06-26T06:30:45.226130656",
+                        "y": 413.2774157033083
+                    },
+                    {
+                        "rel_time": 435.9346733668342,
+                        "type": "forecast",
+                        "x": "2025-06-29T22:25:55.778894480",
+                        "y": 413.27741418934284
+                    },
+                    {
+                        "rel_time": 439.59798994974875,
+                        "type": "forecast",
+                        "x": "2025-07-03T14:21:06.331658288",
+                        "y": 413.27741267537755
+                    },
+                    {
+                        "rel_time": 443.26130653266335,
+                        "type": "forecast",
+                        "x": "2025-07-07T06:16:16.884422112",
+                        "y": 413.2774111614122
+                    },
+                    {
+                        "rel_time": 446.9246231155779,
+                        "type": "forecast",
+                        "x": "2025-07-10T22:11:27.437185928",
+                        "y": 413.2774096474469
+                    },
+                    {
+                        "rel_time": 450.5879396984925,
+                        "type": "forecast",
+                        "x": "2025-07-14T14:06:37.989949752",
+                        "y": 413.27740813348163
+                    },
+                    {
+                        "rel_time": 454.25125628140705,
+                        "type": "forecast",
+                        "x": "2025-07-18T06:01:48.542713568",
+                        "y": 413.2774066195163
+                    },
+                    {
+                        "rel_time": 457.91457286432166,
+                        "type": "forecast",
+                        "x": "2025-07-21T21:56:59.095477392",
+                        "y": 413.277405105551
+                    },
+                    {
+                        "rel_time": 461.5778894472362,
+                        "type": "forecast",
+                        "x": "2025-07-25T13:52:09.648241208",
+                        "y": 413.27740359158577
+                    },
+                    {
+                        "rel_time": 465.2412060301508,
+                        "type": "forecast",
+                        "x": "2025-07-29T05:47:20.201005024",
+                        "y": 413.27740207762054
+                    },
+                    {
+                        "rel_time": 468.90452261306535,
+                        "type": "forecast",
+                        "x": "2025-08-01T21:42:30.753768848",
+                        "y": 413.27740056365525
+                    },
+                    {
+                        "rel_time": 472.5678391959799,
+                        "type": "forecast",
+                        "x": "2025-08-05T13:37:41.306532656",
+                        "y": 413.27739904968996
+                    },
+                    {
+                        "rel_time": 476.2311557788945,
+                        "type": "forecast",
+                        "x": "2025-08-09T05:32:51.859296488",
+                        "y": 413.27739753572473
+                    },
+                    {
+                        "rel_time": 479.89447236180905,
+                        "type": "forecast",
+                        "x": "2025-08-12T21:28:02.412060304",
+                        "y": 413.27739602175956
+                    },
+                    {
+                        "rel_time": 483.55778894472365,
+                        "type": "forecast",
+                        "x": "2025-08-16T13:23:12.964824128",
+                        "y": 413.2773945077944
+                    },
+                    {
+                        "rel_time": 487.2211055276382,
+                        "type": "forecast",
+                        "x": "2025-08-20T05:18:23.517587936",
+                        "y": 413.2773929938292
+                    },
+                    {
+                        "rel_time": 490.8844221105528,
+                        "type": "forecast",
+                        "x": "2025-08-23T21:13:34.070351768",
+                        "y": 413.27739147986404
+                    },
+                    {
+                        "rel_time": 494.54773869346735,
+                        "type": "forecast",
+                        "x": "2025-08-27T13:08:44.623115576",
+                        "y": 413.2773899658988
+                    },
+                    {
+                        "rel_time": 498.21105527638196,
+                        "type": "forecast",
+                        "x": "2025-08-31T05:03:55.175879400",
+                        "y": 413.27738845193363
+                    },
+                    {
+                        "rel_time": 501.8743718592965,
+                        "type": "forecast",
+                        "x": "2025-09-03T20:59:05.728643224",
+                        "y": 413.2773869379685
+                    },
+                    {
+                        "rel_time": 505.5376884422111,
+                        "type": "forecast",
+                        "x": "2025-09-07T12:54:16.281407032",
+                        "y": 413.2773854240034
+                    },
+                    {
+                        "rel_time": 509.20100502512565,
+                        "type": "forecast",
+                        "x": "2025-09-11T04:49:26.834170856",
+                        "y": 413.2773839100383
+                    },
+                    {
+                        "rel_time": 512.8643216080402,
+                        "type": "forecast",
+                        "x": "2025-09-14T20:44:37.386934672",
+                        "y": 413.27738239607305
+                    },
+                    {
+                        "rel_time": 516.5276381909548,
+                        "type": "forecast",
+                        "x": "2025-09-18T12:39:47.939698496",
+                        "y": 413.277380882108
+                    },
+                    {
+                        "rel_time": 520.1909547738694,
+                        "type": "forecast",
+                        "x": "2025-09-22T04:34:58.492462312",
+                        "y": 413.27737936814293
+                    },
+                    {
+                        "rel_time": 523.8542713567839,
+                        "type": "forecast",
+                        "x": "2025-09-25T20:30:09.045226128",
+                        "y": 413.27737785417787
+                    },
+                    {
+                        "rel_time": 527.5175879396985,
+                        "type": "forecast",
+                        "x": "2025-09-29T12:25:19.597989952",
+                        "y": 413.2773763402128
+                    },
+                    {
+                        "rel_time": 531.1809045226131,
+                        "type": "forecast",
+                        "x": "2025-10-03T04:20:30.150753768",
+                        "y": 413.27737482624764
+                    },
+                    {
+                        "rel_time": 534.8442211055277,
+                        "type": "forecast",
+                        "x": "2025-10-06T20:15:40.703517600",
+                        "y": 413.27737331228263
+                    },
+                    {
+                        "rel_time": 538.5075376884422,
+                        "type": "forecast",
+                        "x": "2025-10-10T12:10:51.256281408",
+                        "y": 413.27737179831763
+                    },
+                    {
+                        "rel_time": 542.1708542713568,
+                        "type": "forecast",
+                        "x": "2025-10-14T04:06:01.809045224",
+                        "y": 413.27737028435257
+                    },
+                    {
+                        "rel_time": 545.8341708542714,
+                        "type": "forecast",
+                        "x": "2025-10-17T20:01:12.361809056",
+                        "y": 413.27736877038757
+                    },
+                    {
+                        "rel_time": 549.497487437186,
+                        "type": "forecast",
+                        "x": "2025-10-21T11:56:22.914572872",
+                        "y": 413.2773672564225
+                    },
+                    {
+                        "rel_time": 553.1608040201005,
+                        "type": "forecast",
+                        "x": "2025-10-25T03:51:33.467336688",
+                        "y": 413.27736574245756
+                    },
+                    {
+                        "rel_time": 556.8241206030151,
+                        "type": "forecast",
+                        "x": "2025-10-28T19:46:44.020100504",
+                        "y": 413.27736422849256
+                    },
+                    {
+                        "rel_time": 560.4874371859297,
+                        "type": "forecast",
+                        "x": "2025-11-01T11:41:54.572864328",
+                        "y": 413.2773627145276
+                    },
+                    {
+                        "rel_time": 564.1507537688442,
+                        "type": "forecast",
+                        "x": "2025-11-05T03:37:05.125628136",
+                        "y": 413.27736120056267
+                    },
+                    {
+                        "rel_time": 567.8140703517588,
+                        "type": "forecast",
+                        "x": "2025-11-08T19:32:15.678391960",
+                        "y": 413.27735968659766
+                    },
+                    {
+                        "rel_time": 571.4773869346734,
+                        "type": "forecast",
+                        "x": "2025-11-12T11:27:26.231155784",
+                        "y": 413.2773581726327
+                    },
+                    {
+                        "rel_time": 575.140703517588,
+                        "type": "forecast",
+                        "x": "2025-11-16T03:22:36.783919600",
+                        "y": 413.2773566586678
+                    },
+                    {
+                        "rel_time": 578.8040201005025,
+                        "type": "forecast",
+                        "x": "2025-11-19T19:17:47.336683424",
+                        "y": 413.27735514470294
+                    },
+                    {
+                        "rel_time": 582.4673366834171,
+                        "type": "forecast",
+                        "x": "2025-11-23T11:12:57.889447232",
+                        "y": 413.27735363073805
+                    },
+                    {
+                        "rel_time": 586.1306532663317,
+                        "type": "forecast",
+                        "x": "2025-11-27T03:08:08.442211064",
+                        "y": 413.27735211677305
+                    },
+                    {
+                        "rel_time": 589.7939698492463,
+                        "type": "forecast",
+                        "x": "2025-11-30T19:03:18.994974880",
+                        "y": 413.2773506028082
+                    },
+                    {
+                        "rel_time": 593.4572864321608,
+                        "type": "forecast",
+                        "x": "2025-12-04T10:58:29.547738696",
+                        "y": 413.2773490888433
+                    },
+                    {
+                        "rel_time": 597.1206030150754,
+                        "type": "forecast",
+                        "x": "2025-12-08T02:53:40.100502512",
+                        "y": 413.2773475748785
+                    },
+                    {
+                        "rel_time": 600.78391959799,
+                        "type": "forecast",
+                        "x": "2025-12-11T18:48:50.653266336",
+                        "y": 413.27734606091366
+                    },
+                    {
+                        "rel_time": 604.4472361809046,
+                        "type": "forecast",
+                        "x": "2025-12-15T10:44:01.206030160",
+                        "y": 413.27734454694877
+                    },
+                    {
+                        "rel_time": 608.1105527638191,
+                        "type": "forecast",
+                        "x": "2025-12-19T02:39:11.758793968",
+                        "y": 413.27734303298394
+                    },
+                    {
+                        "rel_time": 611.7738693467337,
+                        "type": "forecast",
+                        "x": "2025-12-22T18:34:22.311557792",
+                        "y": 413.27734151901916
+                    },
+                    {
+                        "rel_time": 615.4371859296483,
+                        "type": "forecast",
+                        "x": "2025-12-26T10:29:32.864321608",
+                        "y": 413.2773400050543
+                    },
+                    {
+                        "rel_time": 619.1005025125628,
+                        "type": "forecast",
+                        "x": "2025-12-30T02:24:43.417085424",
+                        "y": 413.27733849108955
+                    },
+                    {
+                        "rel_time": 622.7638190954774,
+                        "type": "forecast",
+                        "x": "2026-01-02T18:19:53.969849248",
+                        "y": 413.2773369771247
+                    },
+                    {
+                        "rel_time": 626.427135678392,
+                        "type": "forecast",
+                        "x": "2026-01-06T10:15:04.522613072",
+                        "y": 413.27733546315994
+                    },
+                    {
+                        "rel_time": 630.0904522613066,
+                        "type": "forecast",
+                        "x": "2026-01-10T02:10:15.075376888",
+                        "y": 413.2773339491952
+                    },
+                    {
+                        "rel_time": 633.7537688442211,
+                        "type": "forecast",
+                        "x": "2026-01-13T18:05:25.628140704",
+                        "y": 413.2773324352305
+                    },
+                    {
+                        "rel_time": 637.4170854271357,
+                        "type": "forecast",
+                        "x": "2026-01-17T10:00:36.180904528",
+                        "y": 413.27733092126573
+                    },
+                    {
+                        "rel_time": 641.0804020100503,
+                        "type": "forecast",
+                        "x": "2026-01-21T01:55:46.733668344",
+                        "y": 413.27732940730095
+                    },
+                    {
+                        "rel_time": 644.7437185929649,
+                        "type": "forecast",
+                        "x": "2026-01-24T17:50:57.286432168",
+                        "y": 413.27732789333623
+                    },
+                    {
+                        "rel_time": 648.4070351758794,
+                        "type": "forecast",
+                        "x": "2026-01-28T09:46:07.839195984",
+                        "y": 413.2773263793716
+                    },
+                    {
+                        "rel_time": 652.070351758794,
+                        "type": "forecast",
+                        "x": "2026-02-01T01:41:18.391959800",
+                        "y": 413.2773248654069
+                    },
+                    {
+                        "rel_time": 655.7336683417086,
+                        "type": "forecast",
+                        "x": "2026-02-04T17:36:28.944723624",
+                        "y": 413.2773233514422
+                    },
+                    {
+                        "rel_time": 659.3969849246231,
+                        "type": "forecast",
+                        "x": "2026-02-08T09:31:39.497487432",
+                        "y": 413.2773218374775
+                    },
+                    {
+                        "rel_time": 663.0603015075377,
+                        "type": "forecast",
+                        "x": "2026-02-12T01:26:50.050251264",
+                        "y": 413.2773203235128
+                    },
+                    {
+                        "rel_time": 666.7236180904523,
+                        "type": "forecast",
+                        "x": "2026-02-15T17:22:00.603015072",
+                        "y": 413.2773188095482
+                    },
+                    {
+                        "rel_time": 670.3869346733669,
+                        "type": "forecast",
+                        "x": "2026-02-19T09:17:11.155778904",
+                        "y": 413.27731729558354
+                    },
+                    {
+                        "rel_time": 674.0502512562814,
+                        "type": "forecast",
+                        "x": "2026-02-23T01:12:21.708542712",
+                        "y": 413.27731578161894
+                    },
+                    {
+                        "rel_time": 677.713567839196,
+                        "type": "forecast",
+                        "x": "2026-02-26T17:07:32.261306528",
+                        "y": 413.2773142676543
+                    },
+                    {
+                        "rel_time": 681.3768844221106,
+                        "type": "forecast",
+                        "x": "2026-03-02T09:02:42.814070360",
+                        "y": 413.27731275368967
+                    },
+                    {
+                        "rel_time": 685.0402010050252,
+                        "type": "forecast",
+                        "x": "2026-03-06T00:57:53.366834176",
+                        "y": 413.2773112397251
+                    },
+                    {
+                        "rel_time": 688.7035175879397,
+                        "type": "forecast",
+                        "x": "2026-03-09T16:53:03.919597992",
+                        "y": 413.2773097257605
+                    },
+                    {
+                        "rel_time": 692.3668341708543,
+                        "type": "forecast",
+                        "x": "2026-03-13T08:48:14.472361808",
+                        "y": 413.27730821179597
+                    },
+                    {
+                        "rel_time": 696.0301507537689,
+                        "type": "forecast",
+                        "x": "2026-03-17T00:43:25.025125640",
+                        "y": 413.27730669783136
+                    },
+                    {
+                        "rel_time": 699.6934673366835,
+                        "type": "forecast",
+                        "x": "2026-03-20T16:38:35.577889448",
+                        "y": 413.2773051838668
+                    },
+                    {
+                        "rel_time": 703.356783919598,
+                        "type": "forecast",
+                        "x": "2026-03-24T08:33:46.130653272",
+                        "y": 413.27730366990227
+                    },
+                    {
+                        "rel_time": 707.0201005025126,
+                        "type": "forecast",
+                        "x": "2026-03-28T00:28:56.683417080",
+                        "y": 413.2773021559378
+                    },
+                    {
+                        "rel_time": 710.6834170854272,
+                        "type": "forecast",
+                        "x": "2026-03-31T16:24:07.236180912",
+                        "y": 413.2773006419733
+                    },
+                    {
+                        "rel_time": 714.3467336683417,
+                        "type": "forecast",
+                        "x": "2026-04-04T08:19:17.788944728",
+                        "y": 413.2772991280087
+                    },
+                    {
+                        "rel_time": 718.0100502512563,
+                        "type": "forecast",
+                        "x": "2026-04-08T00:14:28.341708544",
+                        "y": 413.27729761404424
+                    },
+                    {
+                        "rel_time": 721.6733668341709,
+                        "type": "forecast",
+                        "x": "2026-04-11T16:09:38.894472368",
+                        "y": 413.27729610007975
+                    },
+                    {
+                        "rel_time": 725.3366834170855,
+                        "type": "forecast",
+                        "x": "2026-04-15T08:04:49.447236184",
+                        "y": 413.2772945861153
+                    },
+                    {
+                        "rel_time": 729.0,
+                        "type": "forecast",
+                        "x": "2026-04-19T00:00:00",
+                        "y": 413.2772930721508
+                    }
+                ],
+                "fill": false,
+                "label": "Harmonic Model Fit & Forecast",
+                "pointRadius": 0,
+                "showLine": true,
+                "tension": 0.1
+            }
+        ]
+    },
+    "dataset_used": "SPARK.<dataikuapi.dss.dataset.DSSDataset object at 0x129da3a90>",
+    "model_summary": {
+        "exponential": {
+            "fitted": true,
+            "metrics": {
+                "mae": 183.45050305181047,
+                "mse": 59377.63254143758,
+                "r2": -8.490319869380869e-08
+            },
+            "params": {
+                "Di": 1.0000000000000003e-09,
+                "qi": 413.27759421099046
+            }
+        },
+        "harmonic": {
+            "fitted": true,
+            "metrics": {
+                "mae": 183.45050308248523,
+                "mse": 59377.632541436775,
+                "r2": -8.490318514908779e-08
+            },
+            "params": {
+                "Di": 1.0000000000000003e-09,
+                "qi": 413.27759435129747
+            }
+        },
+        "hyperbolic": {
+            "fitted": true,
+            "metrics": {
+                "mae": 183.4505045676684,
+                "mse": 59377.63254215864,
+                "r2": -8.491534231325204e-08
+            },
+            "params": {
+                "Di": 1.0001429939214159e-09,
+                "b": 0.00504122883078606,
+                "qi": 413.2776011567105
+            }
+        }
+    },
+    "selected_model_type": "harmonic",
+    "success": true,
+    "well_id_analyzed": "FAR-1"
+}

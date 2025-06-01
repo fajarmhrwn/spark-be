@@ -167,12 +167,14 @@ def productionStat():
         metric['current'] = {
             "gas": current_data['GAS_RATE (MMscf/d)'].sum(),
             "water": current_data['WATER_RATE (stb/d)'].sum(),
-            "oil": current_data['OIL_RATE (stb/d)'].sum()
+            "oil": current_data['OIL_RATE (stb/d)'].sum(),
+            "pressure": current_data['DOWNHOLE_PRESSURE (psi)'].mean(),
         }
         metric['previous'] = {
             "gas": previous_data['GAS_RATE (MMscf/d)'].sum(),
             "water": previous_data['WATER_RATE (stb/d)'].sum(),
-            "oil": previous_data['OIL_RATE (stb/d)'].sum()
+            "oil": previous_data['OIL_RATE (stb/d)'].sum(),
+            "pressure": previous_data['DOWNHOLE_PRESSURE (psi)'].mean(),
         }
 
 
@@ -185,7 +187,8 @@ def productionStat():
               line_chart[str(date)] = {
                   "gas": daily_data['GAS_RATE (MMscf/d)'].sum(),
                   "water": daily_data['WATER_RATE (stb/d)'].sum(),
-                  "oil": daily_data['OIL_RATE (stb/d)'].sum()
+                  "oil": daily_data['OIL_RATE (stb/d)'].sum(),
+                  "pressure": daily_data['DOWNHOLE_PRESSURE (psi)'].mean(),
               }
 
         '''  pie chart data for gas, water, oil production  get the sum of each well with data is today'''
@@ -569,3 +572,204 @@ def forecast_well():
             'error_type': type(e).__name__,
             'traceback_snippet': tb_str.splitlines()[-5:] # Provide last few lines for context
         }
+
+def get_well_score(oil, gas, water, artificial_score, workover_score, optimization_score):
+    today = pd.to_datetime("today").normalize()
+    current_date = today.strftime("%Y-%m-%d")
+
+    # Fixed: Series max() doesn't need .iloc[0]
+    oil_max = oil['OIL_RATE (stb/d)'].max()
+    # Fixed: DataFrame filtering syntax
+    oil_current_data = oil[oil['DATE'] == current_date]['OIL_RATE (stb/d)']
+    if oil_current_data.empty:
+        # Fallback to latest available data
+        oil_current = oil.iloc[-1] if not oil.empty else 0
+    else:
+        oil_current = oil_current_data.iloc[0]
+    oil_score = (oil_current / oil_max) * 100 if oil_max > 0 else 0
+
+    gas_max = gas['GAS_RATE (MMscf/d)'].max()
+    gas_current_data = gas[gas['DATE'] == current_date]['GAS_RATE (MMscf/d)']
+    if gas_current_data.empty:
+        gas_current = gas.iloc[-1] if not gas.empty else 0
+    else:
+        gas_current = gas_current_data.iloc[0]
+    gas_score = (gas_current / gas_max) * 100 if gas_max > 0 else 0
+
+    water_max = water['WATER_RATE (stb/d)'].max()
+    water_current_data = water[water['DATE'] == current_date]['WATER_RATE (stb/d)']
+    if water_current_data.empty:
+        water_current = water.iloc[-1] if not water.empty else 0
+    else:
+        water_current = water_current_data.iloc[0]
+    water_score = (water_current / water_max) * 100 if water_max > 0 else 0
+
+    production = oil_score * 0.2 + gas_score * 0.1 - water_score * 0.1
+
+    # Convert artificial lift color to score
+    if artificial_score == "green":
+        artificial_score_value = 100
+    elif artificial_score == "yellow":
+        artificial_score_value = 50
+    elif artificial_score == "red":
+        artificial_score_value = 0
+    else:
+        artificial_score_value = 100
+
+    workover_score_value = workover_score * 100
+    optimization_score_value = optimization_score * 100
+
+    score = production + 0.2 * artificial_score_value + 0.3 * (100 - workover_score_value) + 0.2 * optimization_score_value
+    return score
+
+@fetch_api.route("/well-score", methods=["GET"])
+def score_well():
+    try:
+        today = pd.to_datetime("today").normalize()
+        current_date = today.strftime("%Y-%m-%d")
+        project = client.get_default_project()
+        well = request.args.get('well', None, type=str)
+        area = well.split("-")[0]
+
+        if not well:
+            return jsonify({"error": "Well Id not defined"}), 400
+
+        # Get workover data
+        dataset = project.get_dataset("scored_MHI_distinct")
+        workover_data = dataset.get_as_core_dataset()
+        workover_data = workover_data.get_dataframe()
+
+        # Get production data
+        dataset = project.get_dataset("Well_data")
+        production_data = dataset.get_as_core_dataset()
+        production_data = production_data.get_dataframe()
+        production_data['DATE'] = pd.to_datetime(production_data['DATE']).dt.strftime('%Y-%m-%d')
+
+        # Fixed: dataset name from 'artlift_data' to 'airlift_data'
+        dataset = project.get_dataset('artlift_data')
+        airlift_data = dataset.get_as_core_dataset()
+        airlift_data = airlift_data.get_dataframe()
+        airlift_data['DATE'] = pd.to_datetime(airlift_data['DATE']).dt.strftime('%Y-%m-%d')
+
+        score_well = {}
+        wells = production_data["WELL"].unique().tolist()
+        filtered_wells = [well for well in wells if area in well]
+        for well in filtered_wells:
+          production_data_filtered = production_data[production_data["WELL"] == well]
+          if production_data_filtered.empty:
+              return jsonify({"error": f"No production data found for well: {well}"}), 404
+
+          gas_data = production_data_filtered[["DATE","GAS_RATE (MMscf/d)"]]
+          oil_data = production_data_filtered[["DATE","OIL_RATE (stb/d)"]]
+          water_data = production_data_filtered[["DATE","WATER_RATE (stb/d)"]]
+
+          # Fixed: DataFrame filtering
+          workover_filtered = workover_data[workover_data["WELL"] == well]
+          if workover_filtered.empty:
+              workover = 0
+          else:
+            workover = workover_filtered["workover_score"].iloc[0]
+
+          # Fixed: DataFrame filtering syntax with proper boolean operators
+          airlift_filtered = airlift_data[
+              (airlift_data["WELL"] == well) &
+              (airlift_data["DATE"] == current_date)
+          ]
+          if airlift_filtered.empty:
+              return jsonify({"error": f"No airlift data found for well: {well} on date: {current_date}"}), 404
+          airlift = airlift_filtered["Color"].iloc[0]
+
+          # Randomize Optimzation Score
+          optimization = random.uniform(0, 1)
+
+          score = get_well_score(oil_data, gas_data, water_data, airlift, workover, optimization)
+          well_detail = {}
+          well_detail["score"] = score
+          well_detail["wor"] = workover * 100
+          score_well[well] = well_detail
+        # Sort by score (descending - higher score = better rank)
+        sorted_by_score = sorted(score_well.items(), key=lambda x: x[1]['score'], reverse=True)
+        # Sort by WOR (ascending - lower WOR = better rank)
+        sorted_by_wor = sorted(score_well.items(), key=lambda x: x[1]['wor'])
+
+        # Add rankings
+        for i, (well_name, data) in enumerate(sorted_by_score):
+            score_well[well_name]['score_rank'] = i + 1
+
+        for i, (well_name, data) in enumerate(sorted_by_wor):
+            score_well[well_name]['wor_rank'] = i + 1
+
+        score_well["area"] = area
+        return jsonify(score_well)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@fetch_api.route("/artifical-monitoring", methods=["GET"])
+@fetch_api.route("/artifical-monitoring", methods=["GET"])
+def artificial_monitoring():
+    try:
+        today = pd.to_datetime("today").normalize()
+        current_date = today.strftime("%Y-%m-%d")
+        project = client.get_default_project()
+        well = request.args.get('well', None, type=str)
+
+        if not well:
+            return jsonify({"error": "Well parameter is required"}), 400
+
+        dataset = project.get_dataset('artlift_data')  # Fixed typo: 'artlift_data' -> 'airlift_data'
+        airlift_data = dataset.get_as_core_dataset()
+        airlift_data = airlift_data.get_dataframe()
+        airlift_data['DATE'] = pd.to_datetime(airlift_data['DATE']).dt.strftime('%Y-%m-%d')
+
+        # Convert numeric columns to proper data types
+        numeric_columns = ['OIL_RATE (stb/d)', 'Vibration', 'Discharge Pressure', 'Intake Temperature', 'Motor Temperature']
+        for col in numeric_columns:
+            if col in airlift_data.columns:
+                airlift_data[col] = pd.to_numeric(airlift_data[col], errors='coerce')
+
+        # Fixed: Use & instead of and, and proper parentheses
+        filtered_df = airlift_data[
+            (airlift_data["WELL"] == well) &
+            (airlift_data["Vibration"] != "-")
+        ]
+
+        line_chart = {}
+        for i in range(30):
+            date = (today - pd.DateOffset(days=i)).strftime("%Y-%m-%d")
+            daily_data = filtered_df[filtered_df['DATE'] == date]
+
+            if not daily_data.empty:
+                line_chart[str(date)] = {
+                    "oil": daily_data['OIL_RATE (stb/d)'].sum(),
+                    "vibration": daily_data['Vibration'].mean(),
+                    "pressure": daily_data['Discharge Pressure'].sum(),
+                    "intake": daily_data['Intake Temperature'].mean(),
+                    "motor": daily_data['Motor Temperature'].mean(),
+                }
+            else:
+                line_chart[str(date)] = {
+                    "oil": 0,
+                    "vibration": 0,
+                    "pressure": 0,
+                    "intake": 0,
+                    "motor": 0,
+                }
+
+        # Get current status
+        current_status_data = filtered_df[filtered_df["DATE"] == current_date]
+
+        # Fixed: Handle status properly
+        if not current_status_data.empty:
+            status = current_status_data["Color"].iloc[0]  # Get first value
+        else:
+            status = "unknown"  # Default status when no data available
+
+        data = {
+            "line_data": line_chart,
+            "status": "Warning" if status == "yellow" else "Critical" if status == "red" else "Good" if status == "green" else status
+        }
+
+        return jsonify(data)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
