@@ -33,6 +33,6 @@ class Dataiku(metaclass=SingletonMeta):
 if __name__ == "__main__":
   client = Dataiku().client
   project = client.get_default_project()
-  print(project)
+  print(client.list_project_keys())
   for d in project.list_datasets():
     print(d.name)
