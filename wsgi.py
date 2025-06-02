@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # Fix: Configure CORS properly - remove the "*" as it conflicts with specific origins
 CORS(app,
-     origins=["http://localhost:4200", "http://localhost:5300", "http://localhost:3000","*","**"],
+     origins=["http://localhost:4200","*"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization"],
      supports_credentials=True)  # Add this if you need to send cookies/auth

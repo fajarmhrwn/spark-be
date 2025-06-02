@@ -705,7 +705,6 @@ def score_well():
         return jsonify({"error": str(e)}), 500
 
 @fetch_api.route("/artifical-monitoring", methods=["GET"])
-@fetch_api.route("/artifical-monitoring", methods=["GET"])
 def artificial_monitoring():
     try:
         today = pd.to_datetime("today").normalize()
@@ -773,3 +772,88 @@ def artificial_monitoring():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@fetch_api.route("/well-layer", methods=["GET"])
+def well_layer():
+    try:
+      project = client.get_default_project()
+      dataset = project.get_dataset('DatasetPerLayer')  # Fixed typo: 'artlift_data' -> 'airlift_data'
+      layerData = dataset.get_as_core_dataset()
+      layerData = layerData.get_dataframe()
+      dataset = project.get_dataset('OverallInterventionRecommendations')  # Fixed typo: 'artlift_data' -> 'airlift_data'
+      recomData = dataset.get_as_core_dataset()
+      recomData = recomData.get_dataframe()
+      list_well = [
+          "NO 15/9-F-14 H",
+          "NO 15/9-F-15 D",
+          "NO 15/9-F-12 H",
+          "NO 15/9-F-1 C",
+          "NO 15/9-F-11 H"
+      ]
+      random_index = random.randint(0, 4)
+      well = list_well[random_index]
+      layerData = layerData[layerData['WELL_BORE_CODE'] == well]
+      recomData = recomData[recomData['well_code'] == well]
+      total_rate_well = layerData["CURRENT_WELL_OIL_RATE_BOPD"].iloc[0]
+      list_layer = list(layerData['LAYER_ID'])
+      data = {}
+      data["total_rate_well"] = total_rate_well
+      data["layers"] = []
+      data["total_reservoir"] = 0
+      data["incremental_prod"] = recomData['total_incremental_production_stbd'].iloc[0]
+      data["workover_recom"] = recomData['intervention_mix'].iloc[0]
+      for layer in list_layer:
+          temp = {}
+          temp["layer"] = layer
+          curr_layer = layerData[layerData["LAYER_ID"] == layer].copy()
+          temp["rate_layer"] = curr_layer["ALLOCATED_OIL_RATE_BOPD"].iloc[0]
+          temp["total_reservoir"] = curr_layer["ORIGINAL_OIL_IN_PLACE_STB"].iloc[0]
+          temp["prod_oil"] = curr_layer["CUMULATIVE_OIL_PRODUCED_STB"].iloc[0]
+          temp["remaining_reservoir"] = curr_layer["REMAINING_RESERVES_STB"].iloc[0]
+          data["total_reservoir"] =  data["total_reservoir"] + temp["remaining_reservoir"]
+          data["layers"].append(temp)
+      return jsonify(data)
+    except Exception as e:
+      return jsonify({"error": str(e)}), 500
+
+@fetch_api.route("/map", methods=["GET"])
+def get_map():
+    try:
+        project = client.get_default_project()
+        dataset = project.get_dataset('ccus_world_data')
+        mapData = dataset.get_as_core_dataset()
+        mapData = mapData.get_dataframe()
+
+        # Ensure numeric columns are numeric types
+        mapData['latitude'] = pd.to_numeric(mapData['latitude'], errors='coerce')
+        mapData['longitude'] = pd.to_numeric(mapData['longitude'], errors='coerce')
+        mapData['code'] = pd.to_numeric(mapData['code'], errors='coerce')
+
+        data = []
+        for index, row in mapData.iterrows():
+            temp = {
+                'code': int(row['code']) if pd.notna(row['code']) else None,
+                'region': str(row['region']) if pd.notna(row['region']) else None,
+                'country': str(row['country']) if pd.notna(row['country']) else None,
+                'area': str(row['area']) if pd.notna(row['area']) else None,
+                'latitude': float(row['latitude']) if pd.notna(row['latitude']) else None,
+                'longitude': float(row['longitude']) if pd.notna(row['longitude']) else None,
+                'site_name': str(row['site_name']) if pd.notna(row['site_name']) else None,
+                'basin': str(row['basin']) if pd.notna(row['basin']) else None,
+                'unit_designation': str(row['unit_designation']) if pd.notna(row['unit_designation']) else None,
+                'storage_unit_type': str(row['storage_unit_type']) if pd.notna(row['storage_unit_type']) else None,
+                'rocktype': str(row['rocktype']) if pd.notna(row['rocktype']) else None,
+                'project_spec': str(row['project_spec']) if pd.notna(row['project_spec']) else None,
+                'co2': float(row['co2_density']) if pd.notna(row['co2_density']) else 0,
+            }
+            data.append(temp)
+
+        return jsonify({
+            "data": data
+        })
+    except Exception as e:
+        print("Error: ", e)
+        return jsonify({
+            "error": str(e),
+            "message": "Failed to fetch map data"
+        }), 500
