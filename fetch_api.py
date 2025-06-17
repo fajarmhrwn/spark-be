@@ -8,8 +8,7 @@ from scipy.optimize import curve_fit
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import warnings
 import traceback
-import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta, UTC
 
 load_dotenv()
 
@@ -1362,7 +1361,7 @@ def predict_esp_failure_endpoint():
         print(f"PIPELINE START: Fetching data for well: {well_name}")
         raw_dataset = project.get_dataset('Artlift_Plus_Ops').get_as_core_dataset().get_dataframe()
         buffer_hours = analysis_window_hours + 3 # Buffer 3 jam untuk kalkulasi rolling
-        end_time = datetime.utcnow()
+        end_time = datetime.now(UTC)
         start_time = end_time - timedelta(hours=buffer_hours)
 
         df = raw_dataset.get_dataframe(
@@ -1425,7 +1424,7 @@ def predict_esp_failure_endpoint():
         return jsonify({
             "success": True,
             "well_name": well_name,
-            "prediction_timestamp_utc": datetime.utcnow().isoformat(),
+            "prediction_timestamp_utc": datetime.now(UTC).isoformat(),
             "prediction_details": {
                 "failure_mode": final_prediction,
                 "confidence": round(float(prediction_proba), 4),
