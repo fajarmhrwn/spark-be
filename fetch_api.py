@@ -8,6 +8,8 @@ from scipy.optimize import curve_fit
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import warnings
 import traceback
+import datetime
+from datetime import timedelta
 
 load_dotenv()
 
@@ -964,17 +966,46 @@ def predict_esp_failure_endpoint():
 
         # --- Muat semua model forecasting ---
         try:
-            forecasting_models = {
-                'Discharge_Pressure': project.get_saved_model('cDrOuPX1').get_trained_model().get_predictor(),
-                'Frequency': project.get_saved_model('NVYSg2z1').get_trained_model().get_predictor(),
-                'Intake_Pressure': project.get_saved_model('Nfu9lHcn').get_trained_model().get_predictor(), 
-                'Intake_Temperature': project.get_saved_model('ahE1NbPc').get_trained_model().get_predictor(),
-                'Motor_Temperature': project.get_saved_model('rqKQCT1x').get_trained_model().get_predictor(),
-                'Vibration': project.get_saved_model('3uWzFhhA').get_trained_model().get_predictor()
+            # Corrected way to load models using DSSSavedModel API
+            # Temporary dict for building the forecasting models
+            _forecasting_models_predictors = {}
+            forecasting_model_map = {
+                'Discharge_Pressure': 'cDrOuPX1',
+                'Frequency': 'NVYSg2z1',
+                'Intake_Pressure': 'Nfu9lHcn', 
+                'Intake_Temperature': 'ahE1NbPc',
+                'Motor_Temperature': 'rqKQCT1x',
+                'Vibration': '3uWzFhhA'
             }
-            failure_classifier = project.get_saved_model('8L09CeBw').get_trained_model().get_predictor()
 
-        except Exception as e:
+            for key, model_id in forecasting_model_map.items():
+                saved_model_obj = project.get_saved_model(model_id)
+                active_version_info = saved_model_obj.get_active_version()
+                if active_version_info is None:
+                    # Raise an error if no active version is found, as it's required for prediction.
+                    raise RuntimeError(f"No active version found for model '{key}' (ID: {model_id}). An active version is required for prediction.")
+                version_id = active_version_info['id']
+                # get_version_details returns an object that can be used for prediction
+                # (e.g., DSSTrainedTimeseriesForecastingModelDetails or DSSTrainedPredictionModelDetails)
+                # These objects typically have a .predict() method.
+                _forecasting_models_predictors[key] = saved_model_obj.get_version_details(version_id)
+            
+            # Assign to the original variable name used later in the script
+            forecasting_models = _forecasting_models_predictors
+
+            # Load the failure classifier
+            classifier_model_id = '8L09CeBw'
+            classifier_saved_model_obj = project.get_saved_model(classifier_model_id)
+            classifier_active_version_info = classifier_saved_model_obj.get_active_version()
+            if classifier_active_version_info is None:
+                raise RuntimeError(f"No active version found for classifier model (ID: {classifier_model_id}). An active version is required for prediction.")
+            classifier_version_id = classifier_active_version_info['id']
+            # This object will also have a .predict() method
+            failure_classifier = classifier_saved_model_obj.get_version_details(classifier_version_id)
+
+        except Exception as e: # Catches RuntimeError from above and other exceptions during model loading
+            # Log the error for server-side debugging if desired
+            # print(f"Error during model loading: {str(e)}") 
             return jsonify({"success": False, "error": f"Failed to load models: {str(e)}"}), 503
 
         # --- Kamus untuk rekomendasi aksi yang sudah diparafrase ---
@@ -1062,9 +1093,9 @@ def predict_esp_failure_endpoint():
 
         # --- 1. Fetch & Filter Data ---
         print(f"PIPELINE START: Fetching data for well: {well_name}")
-        raw_dataset = dataiku.Dataset("Artlift_Plus_Ops")
+        raw_dataset = project.get_dataset('Artlift_Plus_Ops').get_as_core_dataset().get_dataframe()
         buffer_hours = analysis_window_hours + 3 # Buffer 3 jam untuk kalkulasi rolling
-        end_time = datetime.now()
+        end_time = datetime.utcnow()
         start_time = end_time - timedelta(hours=buffer_hours)
 
         df = raw_dataset.get_dataframe(
@@ -1081,11 +1112,13 @@ def predict_esp_failure_endpoint():
         
         # --- 2. On-the-fly Forecasting ---
         print("PIPELINE STEP 2: Running on-the-fly forecasting...")
+        # The `forecasting_models` variable now contains the correct predictor objects.
         for param, predictor in forecasting_models.items():
             param_clean = param.replace('_', ' ')
             pred_df = predictor.predict(df.rename(columns=lambda c: c.replace('_', ' ')))
             df[f'{param}_predicted'] = pred_df['prediction']
             df[f'{param}_residual'] = df[param.replace(' ', '_')] - df[f'{param}_predicted']
+            
         # --- 3. On-the-fly Feature Engineering & Trend Categorization ---
         print("PIPELINE STEP 3: Running feature engineering...")
         WINDOW_PERIODS = int(analysis_window_hours * 6) # Asumsi 10 menit interval
@@ -1112,6 +1145,7 @@ def predict_esp_failure_endpoint():
         
         # Ganti nama kolom kembali ke format asli jika model dilatih dengan spasi
         latest_data_point_renamed = latest_data_point.rename(columns=lambda c: c.replace('_', ' '))
+        # The `failure_classifier` variable now contains the correct predictor object.
         prediction_result = failure_classifier.predict(latest_data_point_renamed)
         
         final_prediction = prediction_result['prediction'][0]
@@ -1145,9 +1179,11 @@ def predict_esp_failure_endpoint():
 
     except Exception as e:
         print(f"FATAL ERROR in endpoint: {str(e)}")
+        # Adding traceback for more detailed server-side logging
+        import traceback
+        print(traceback.format_exc())
         return jsonify({
             "success": False, 
             "error": "An unexpected server error occurred.",
             "details": str(e)
         }), 500
-    
