@@ -787,15 +787,13 @@ def well_layer():
       recomData = recomData.get_dataframe()
       list_well = [
           "NO 15/9-F-14 H",
-          "NO 15/9-F-15 D",
           "NO 15/9-F-12 H",
-          "NO 15/9-F-1 C",
           "NO 15/9-F-11 H"
       ]
-      random_index = random.randint(0, 4)
+      random_index = random.randint(0, 2)
       well = list_well[random_index]
       layerData = layerData[layerData['WELL_BORE_CODE'] == well]
-      recomData = recomData[recomData['well_code'] == well]
+      recomData = recomData[recomData['WELL_CODE'] == well]
       total_rate_well = layerData["CURRENT_WELL_OIL_RATE_BOPD"].iloc[0]
       list_layer = list(layerData['LAYER_ID'])
       data = {}
@@ -860,19 +858,288 @@ def get_map():
             "message": "Failed to fetch map data"
         }), 500
 
+@fetch_api.route("/production-all",methods=["GET"])
+def productionStatAll():
+    try:
+        # 1️⃣ Fetch dataset
+        project = client.get_default_project()
+        dataset = project.get_dataset("Well_data")
+        df = dataset.get_as_core_dataset()
+        df = df.get_dataframe()
+
+        # DATE column is in 2025-05-26 00:00:00 format, we need to convert it to YYYY-MM-DD format
+        df['DATE'] = pd.to_datetime(df['DATE']).dt.strftime('%Y-%m-%d')
+        # Filter out rows where DATE is NaN
+        df = df.dropna(subset=['DATE'])
+
+        # Extract AREA from WELL name (e.g., FAR-1 → FAR, DEA-1 → DEA)
+        df['AREA'] = df['WELL'].str.split('-').str[0]
+
+        today = pd.to_datetime("today").normalize()
+        current_date = today.strftime("%Y-%m-%d")
+        previous_date = (today - pd.DateOffset(days=1)).strftime("%Y-%m-%d")
+
+        # 📊 METRIC: Sum from all areas for current and previous day
+        current_data = df[df['DATE'] == current_date]
+        previous_data = df[df['DATE'] == previous_date]
+
+        # Group by area and calculate totals, then get sum across areas
+        current_area_totals = current_data.groupby('AREA').agg({
+            'GAS_RATE (MMscf/d)': 'sum',
+            'WATER_RATE (stb/d)': 'sum',
+            'OIL_RATE (stb/d)': 'sum',
+            'DOWNHOLE_PRESSURE (psi)': 'mean'
+        }).reset_index()
+
+        previous_area_totals = previous_data.groupby('AREA').agg({
+            'GAS_RATE (MMscf/d)': 'sum',
+            'WATER_RATE (stb/d)': 'sum',
+            'OIL_RATE (stb/d)': 'sum',
+            'DOWNHOLE_PRESSURE (psi)': 'mean'
+        }).reset_index()
+
+        metric = {
+            'current': {
+                "gas": current_area_totals['GAS_RATE (MMscf/d)'].sum() if not current_area_totals.empty else 0,
+                "water": current_area_totals['WATER_RATE (stb/d)'].sum() if not current_area_totals.empty else 0,
+                "oil": current_area_totals['OIL_RATE (stb/d)'].sum() if not current_area_totals.empty else 0,
+                "pressure": current_area_totals['DOWNHOLE_PRESSURE (psi)'].mean() if not current_area_totals.empty else 0,
+            },
+            'previous': {
+                "gas": previous_area_totals['GAS_RATE (MMscf/d)'].sum() if not previous_area_totals.empty else 0,
+                "water": previous_area_totals['WATER_RATE (stb/d)'].sum() if not previous_area_totals.empty else 0,
+                "oil": previous_area_totals['OIL_RATE (stb/d)'].sum() if not previous_area_totals.empty else 0,
+                "pressure": previous_area_totals['DOWNHOLE_PRESSURE (psi)'].mean() if not previous_area_totals.empty else 0,
+            }
+        }
+
+        # 📈 LINE CHART: Separate data for gas, oil, water with 30 days history by AREA
+        # Get all unique areas
+        areas = df['AREA'].unique().tolist()
+
+        # Generate date range for last 30 days
+        date_range = []
+        for i in range(29, -1, -1):  # 29 to 0 for chronological order
+            date = (today - pd.DateOffset(days=i)).strftime("%Y-%m-%d")
+            date_range.append(date)
+
+        line_chart = {
+            "gas": {
+                "dates": date_range,
+                "areas": {}
+            },
+            "oil": {
+                "dates": date_range,
+                "areas": {}
+            },
+            "water": {
+                "dates": date_range,
+                "areas": {}
+            }
+        }
+
+        # Populate data for each area and each production type
+        for area in areas:
+            area_data = df[df['AREA'] == area]
+
+            gas_data = []
+            oil_data = []
+            water_data = []
+
+            for date in date_range:
+                daily_area_data = area_data[area_data['DATE'] == date]
+
+                if not daily_area_data.empty:
+                    # Sum all wells in the area for that date
+                    gas_data.append(daily_area_data['GAS_RATE (MMscf/d)'].sum())
+                    oil_data.append(daily_area_data['OIL_RATE (stb/d)'].sum())
+                    water_data.append(daily_area_data['WATER_RATE (stb/d)'].sum())
+                else:
+                    gas_data.append(0)
+                    oil_data.append(0)
+                    water_data.append(0)
+
+            line_chart["gas"]["areas"][area] = gas_data
+            line_chart["oil"]["areas"][area] = oil_data
+            line_chart["water"]["areas"][area] = water_data
+
+        # 🕸️ SPIDER CHART: Current production comparison across all areas
+        spider_chart = {
+            "areas": areas,
+            "data": {
+                "oil": [],
+                "gas": [],
+                "water": []
+            }
+        }
+
+        for area in areas:
+            area_current_data = df[(df['AREA'] == area) & (df['DATE'] == current_date)]
+
+            if not area_current_data.empty:
+                # Sum all wells in the area for current date
+                spider_chart["data"]["oil"].append(area_current_data['OIL_RATE (stb/d)'].sum())
+                spider_chart["data"]["gas"].append(area_current_data['GAS_RATE (MMscf/d)'].sum())
+                spider_chart["data"]["water"].append(area_current_data['WATER_RATE (stb/d)'].sum())
+            else:
+                spider_chart["data"]["oil"].append(0)
+                spider_chart["data"]["gas"].append(0)
+                spider_chart["data"]["water"].append(0)
+
+        # 📋 PRODUCTION SUMMARY
+        # 1. First production date
+        first_production_date = df['DATE'].min()
+
+        # Get area max production for water target calculation
+        area_max_production = df.groupby('AREA').agg({
+            'OIL_RATE (stb/d)': 'max',
+            'GAS_RATE (MMscf/d)': 'max',
+            'WATER_RATE (stb/d)': 'max'
+        })
+
+        # 2. Average daily production (sum for today only)
+        avg_daily_production = {
+            "oil": current_area_totals['OIL_RATE (stb/d)'].sum() if not current_area_totals.empty else 0,
+            "gas": current_area_totals['GAS_RATE (MMscf/d)'].sum() if not current_area_totals.empty else 0,
+            "water": current_area_totals['WATER_RATE (stb/d)'].sum() if not current_area_totals.empty else 0
+        }
+
+        # 3. Target rate production (calculated based on averageDailyProduction percentages)
+        target_rate = {
+            "oil": avg_daily_production["oil"] / 0.90 if avg_daily_production["oil"] > 0 else 2200,  # averageDailyProduction should be 90% of target
+            "gas": avg_daily_production["gas"] / 1.05 if avg_daily_production["gas"] > 0 else 10,    # averageDailyProduction should be 105% of target
+            "water": area_max_production['WATER_RATE (stb/d)'].sum() * 0.8  # Keep existing calculation for water
+        }
+
+        # 4. Total production (cumulative by area, then summed)
+        area_total_production = df.groupby('AREA').agg({
+            'OIL_RATE (stb/d)': 'sum',
+            'GAS_RATE (MMscf/d)': 'sum',
+            'WATER_RATE (stb/d)': 'sum'
+        })
+
+        total_production = {
+            "oil": area_total_production['OIL_RATE (stb/d)'].sum(),
+            "gas": area_total_production['GAS_RATE (MMscf/d)'].sum(),
+            "water": area_total_production['WATER_RATE (stb/d)'].sum()
+        }
+
+        # 5. Estimated total production (based on current trends - simplified calculation)
+        # Use today's production rate for projection
+        days_to_project = 365
+        estimated_total_production = {
+            "oil": total_production["oil"] + (avg_daily_production["oil"] * days_to_project),
+            "gas": total_production["gas"] + (avg_daily_production["gas"] * days_to_project),
+            "water": total_production["water"] + (avg_daily_production["water"] * days_to_project)
+        }
+
+        # 6. Reserve Analysis and Decline Rate Calculations
+        # Decline rate assumptions (can be adjusted based on reservoir engineering)
+        decline_rate_annual = 0.10  # 10% annual decline rate
+        decline_rate_daily = decline_rate_annual / 365  # Daily decline rate
+
+        # Calculate EUR (Estimated Ultimate Recovery) using decline curve analysis
+        # Using simple exponential decline: EUR = Initial_Rate / Decline_Rate
+        initial_oil_rate = df['OIL_RATE (stb/d)'].max() if not df.empty else 0
+        initial_gas_rate = df['GAS_RATE (MMscf/d)'].max() if not df.empty else 0
+
+        # EUR calculations (simplified using current production and decline rate)
+        eur_oil_stb = (avg_daily_production["oil"] / decline_rate_daily) if decline_rate_daily > 0 and avg_daily_production["oil"] > 0 else 0
+        eur_gas_mmscf = (avg_daily_production["gas"] / decline_rate_daily) if decline_rate_daily > 0 and avg_daily_production["gas"] > 0 else 0
+
+        # Convert gas total production from MMscf to MMSCF for consistency
+        total_production_gas_mmscf = total_production["gas"]
+
+        # Calculate remaining reserves
+        remaining_oil_stb = max(0, eur_oil_stb - total_production["oil"])
+        remaining_gas_mmscf = max(0, eur_gas_mmscf - total_production_gas_mmscf)
+
+        # Calculate remaining percentages
+        remaining_oil_percentage = (remaining_oil_stb / eur_oil_stb * 100) if eur_oil_stb > 0 else 0
+        remaining_gas_percentage = (remaining_gas_mmscf / eur_gas_mmscf * 100) if eur_gas_mmscf > 0 else 0
+
+        # Reserve calculations
+        reserves_analysis = {
+            "oil": {
+                "declineRateAnnual": decline_rate_annual,
+                "declineRateDaily": decline_rate_daily,
+                "estimatedEUR": eur_oil_stb,  # STB
+                "totalProduced": total_production["oil"],  # STB
+                "remainingReserves": remaining_oil_stb,  # STB
+                "remainingPercentage": remaining_oil_percentage  # %
+            },
+            "gas": {
+                "declineRateAnnual": decline_rate_annual,
+                "declineRateDaily": decline_rate_daily,
+                "estimatedEUR": eur_gas_mmscf,  # MMSCF
+                "totalProduced": total_production_gas_mmscf,  # MMSCF
+                "remainingReserves": remaining_gas_mmscf,  # MMSCF
+                "remainingPercentage": remaining_gas_percentage  # %
+            }
+        }
+
+        production_summary = {
+            "firstProductionDate": first_production_date,
+            "targetRate": target_rate,
+            "totalProduction": total_production,
+            "estimatedTotalProduction": estimated_total_production,
+            "projectionDays": days_to_project,
+            "averageDailyProduction": avg_daily_production,
+            "reservesAnalysis": reserves_analysis
+        }
+
+        # Area breakdown for additional insights
+        area_breakdown = {}
+        for area in areas:
+            area_data = df[df['AREA'] == area]
+            area_current = area_data[area_data['DATE'] == current_date]
+            area_wells = area_data['WELL'].unique().tolist()
+
+            area_breakdown[area] = {
+                "wells": area_wells,
+                "wellCount": len(area_wells),
+                "currentProduction": {
+                    "oil": area_current['OIL_RATE (stb/d)'].sum() if not area_current.empty else 0,
+                    "gas": area_current['GAS_RATE (MMscf/d)'].sum() if not area_current.empty else 0,
+                    "water": area_current['WATER_RATE (stb/d)'].sum() if not area_current.empty else 0,
+                },
+                "totalProduction": {
+                    "oil": area_data['OIL_RATE (stb/d)'].sum(),
+                    "gas": area_data['GAS_RATE (MMscf/d)'].sum(),
+                    "water": area_data['WATER_RATE (stb/d)'].sum()
+                }
+            }
+
+        return jsonify({
+            "metric": metric,
+            "lineChart": line_chart,
+            "spiderChart": spider_chart,
+            "productionSummary": production_summary,
+            "areaBreakdown": area_breakdown,
+            "totalAreas": len(areas),
+            "totalWells": len(df['WELL'].unique()),
+            "dataDateRange": {
+                "start": df['DATE'].min(),
+                "end": df['DATE'].max()
+            }
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @fetch_api.route("/predict/ccus-trap", methods=["POST"])
 def predict_ccus_trap():
     try:
         project = client.get_default_project()
         input_data = request.get_json()
-        
+
         # Get the model
         model = project.get_saved_model('3qgVTU8C')
-        
+
         # Prepare prediction
         prediction_flowtask = model.get_prediction_flowtask()
         prediction = prediction_flowtask.predict_raw(input_data)
-        
+
         return jsonify({
             "success": True,
             "prediction": prediction,
@@ -882,7 +1149,7 @@ def predict_ccus_trap():
                 "type": "PREDICTION"
             }
         })
-        
+
     except Exception as e:
         print("Error:", e)
         return jsonify({
@@ -896,14 +1163,14 @@ def predict_ccus_go_nogo():
     try:
         project = client.get_default_project()
         input_data = request.get_json()
-        
+
         # Get the model
         model = project.get_saved_model('UAmBxlg8')
-        
+
         # Prepare prediction
         prediction_flowtask = model.get_prediction_flowtask()
         prediction = prediction_flowtask.predict_raw(input_data)
-        
+
         return jsonify({
             "success": True,
             "prediction": prediction,
@@ -913,7 +1180,7 @@ def predict_ccus_go_nogo():
                 "type": "PREDICTION"
             }
         })
-        
+
     except Exception as e:
         print("Error:", e)
         return jsonify({
@@ -927,14 +1194,14 @@ def predict_ccus_eor():
     try:
         project = client.get_default_project()
         input_data = request.get_json()
-        
+
         # Get the model
         model = project.get_saved_model('Zby5vsSm')
-        
+
         # Prepare prediction
         prediction_flowtask = model.get_prediction_flowtask()
         prediction = prediction_flowtask.predict_raw(input_data)
-        
+
         return jsonify({
             "success": True,
             "prediction": prediction,
@@ -944,7 +1211,7 @@ def predict_ccus_eor():
                 "type": "PREDICTION"
             }
         })
-        
+
     except Exception as e:
         print("Error:", e)
         return jsonify({
@@ -952,7 +1219,7 @@ def predict_ccus_eor():
             "error": str(e),
             "message": "Failed to predict CCUS EOR"
         }), 500
-    
+
 @fetch_api.route("/predict/esp-failure", methods=["GET"])
 def predict_esp_failure_endpoint():
     project = client.get_default_project()
@@ -960,7 +1227,7 @@ def predict_esp_failure_endpoint():
         # --- Validasi Input dari Request ---
         well_name = request.args.get('well', None)
         analysis_window_hours = request.args.get('window_hours', 3, type=int)
-        
+
         if not well_name:
             return jsonify({"success": False, "error": "Query parameter 'well' is required."}), 400
 
@@ -1020,74 +1287,74 @@ def predict_esp_failure_endpoint():
                 ],
                 "possible_causes": "Scale buildup, paraffin deposition, or reservoir pressure depletion."
             },
-            "Tubing Leak": { 
-                "priority": "Critical", 
-                "primary_action": "Confirm integrity of the production tubing immediately.", 
+            "Tubing Leak": {
+                "priority": "Critical",
+                "primary_action": "Confirm integrity of the production tubing immediately.",
                 "steps": [
-                    "Initiate a wellhead pressure test to check for leaks.", 
-                    "If pressure test is inconclusive, perform a dead-head test.", 
+                    "Initiate a wellhead pressure test to check for leaks.",
+                    "If pressure test is inconclusive, perform a dead-head test.",
                     "Prepare for potential well intervention if a leak is confirmed."
-                ], 
-                "possible_causes": "Corrosion, connection failure, or mechanical damage." 
+                ],
+                "possible_causes": "Corrosion, connection failure, or mechanical damage."
             },
-            "Pump Wear": { 
-                "priority": "Medium", 
-                "primary_action": "Evaluate pump performance degradation.", 
+            "Pump Wear": {
+                "priority": "Medium",
+                "primary_action": "Evaluate pump performance degradation.",
                 "steps": [
-                    "Analyze system efficiency trends (e.g., energy consumption per barrel lifted).", 
-                    "Review vibration data for sustained increases.", 
+                    "Analyze system efficiency trends (e.g., energy consumption per barrel lifted).",
+                    "Review vibration data for sustained increases.",
                     "Begin planning for a future pump replacement (workover)."
-                ], 
-                "possible_causes": "Abrasive wear, corrosion, or operating outside of design range." 
+                ],
+                "possible_causes": "Abrasive wear, corrosion, or operating outside of design range."
             },
-            "Sand Ingestion": { 
-                "priority": "High", 
-                "primary_action": "Mitigate solids production to prevent catastrophic pump failure.", 
+            "Sand Ingestion": {
+                "priority": "High",
+                "primary_action": "Mitigate solids production to prevent catastrophic pump failure.",
                 "steps": [
-                    "Immediately check surface equipment for sand accumulation.", 
-                    "Consider reducing flow rate to minimize solids lifting.", 
+                    "Immediately check surface equipment for sand accumulation.",
+                    "Consider reducing flow rate to minimize solids lifting.",
                     "Evaluate need for downhole sand control for next workover."
-                ], 
-                "possible_causes": "Formation failure, high drawdown, or ineffective sand control." 
+                ],
+                "possible_causes": "Formation failure, high drawdown, or ineffective sand control."
             },
-            "Closed Valve (SSSV)": { 
-                "priority": "High", 
-                "primary_action": "Verify status of downhole and surface safety valves.", 
+            "Closed Valve (SSSV)": {
+                "priority": "High",
+                "primary_action": "Verify status of downhole and surface safety valves.",
                 "steps": [
-                    "Confirm the intended position of the SSSV and surface valves.", 
-                    "If unintentional, contact Field Service Tech for immediate on-site inspection.", 
+                    "Confirm the intended position of the SSSV and surface valves.",
+                    "If unintentional, contact Field Service Tech for immediate on-site inspection.",
                     "Do not restart pump until valve status is confirmed."
-                ], 
-                "possible_causes": "Accidental closure, control line failure, or safety shutdown." 
+                ],
+                "possible_causes": "Accidental closure, control line failure, or safety shutdown."
             },
-            "Increase in Frequency": { 
-                "priority": "Low", 
-                "primary_action": "Review recent VSD (Variable Speed Drive) frequency changes.", 
+            "Increase in Frequency": {
+                "priority": "Low",
+                "primary_action": "Review recent VSD (Variable Speed Drive) frequency changes.",
                 "steps": [
-                    "Verify if frequency increase was an intentional operational change.", 
-                    "Monitor intake pressure closely to avoid pump-off condition.", 
+                    "Verify if frequency increase was an intentional operational change.",
+                    "Monitor intake pressure closely to avoid pump-off condition.",
                     "If unintentional, revert to the previous setpoint and monitor."
-                ], 
-                "possible_causes": "Manual operator adjustment or automated optimization." 
+                ],
+                "possible_causes": "Manual operator adjustment or automated optimization."
             },
-            "Normal Operation": { 
-                "priority": "Info", 
-                "primary_action": "System operating within expected parameters.", 
+            "Normal Operation": {
+                "priority": "Info",
+                "primary_action": "System operating within expected parameters.",
                 "steps": [
-                    "Continue routine monitoring.", 
+                    "Continue routine monitoring.",
                     "No immediate intervention required."
-                ], 
-                "possible_causes": "N/A" 
+                ],
+                "possible_causes": "N/A"
             },
-            "default": { 
-                "priority": "High", 
-                "primary_action": "Unrecognized pattern detected. Manual analysis required.", 
+            "default": {
+                "priority": "High",
+                "primary_action": "Unrecognized pattern detected. Manual analysis required.",
                 "steps": [
-                    "Review recent trends of all sensor data.", 
-                    "Compare current operations with the daily well plan.", 
+                    "Review recent trends of all sensor data.",
+                    "Compare current operations with the daily well plan.",
                     "Alert senior production engineer for investigation."
-                ], 
-                "possible_causes": "Complex failure mode, sensor malfunction, or a new, unlearned pattern." 
+                ],
+                "possible_causes": "Complex failure mode, sensor malfunction, or a new, unlearned pattern."
             }
         }
 
@@ -1109,7 +1376,7 @@ def predict_esp_failure_endpoint():
 
         df.columns = [c.replace(' ', '_') for c in df.columns]
         df = df.sort_values(by='primary_date')
-        
+
         # --- 2. On-the-fly Forecasting ---
         print("PIPELINE STEP 2: Running on-the-fly forecasting...")
         # The `forecasting_models` variable now contains the correct predictor objects.
@@ -1123,7 +1390,7 @@ def predict_esp_failure_endpoint():
         print("PIPELINE STEP 3: Running feature engineering...")
         WINDOW_PERIODS = int(analysis_window_hours * 6) # Asumsi 10 menit interval
         SLOPE_THRESHOLD = 0.01
-        
+
         cols_to_engineer = ['Discharge_Pressure', 'Frequency', 'Intake_Pressure', 'Intake_Temperature', 'Motor_Temperature', 'Vibration', 'OIL_RATE_numeric']
         for col in cols_to_engineer:
             df[f'{col}_slope'] = df[col].diff()
@@ -1135,26 +1402,26 @@ def predict_esp_failure_endpoint():
         df['Ampere_trend'] = 'Constant' # Placeholder
         df.fillna(method='ffill', inplace=True)
         df.fillna(method='bfill', inplace=True)
-        
+
         if df.empty:
             return jsonify({"success": False, "message": "Dataframe became empty after feature engineering."}), 500
-            
+
         # --- 4. Final Classification ---
         print("PIPELINE STEP 4: Making final failure classification...")
         latest_data_point = df.tail(1)
-        
+
         # Ganti nama kolom kembali ke format asli jika model dilatih dengan spasi
         latest_data_point_renamed = latest_data_point.rename(columns=lambda c: c.replace('_', ' '))
         # The `failure_classifier` variable now contains the correct predictor object.
         prediction_result = failure_classifier.predict(latest_data_point_renamed)
-        
+
         final_prediction = prediction_result['prediction'][0]
         prediction_proba = prediction_result['probas'][final_prediction][0]
 
         # --- 5. Get Action & Format Response ---
         print(f"PIPELINE END. Result: {final_prediction}")
         action_details = PRESCRIPTIVE_ACTIONS.get(final_prediction, PRESCRIPTIVE_ACTIONS["default"])
-        
+
         return jsonify({
             "success": True,
             "well_name": well_name,
@@ -1183,7 +1450,7 @@ def predict_esp_failure_endpoint():
         import traceback
         print(traceback.format_exc())
         return jsonify({
-            "success": False, 
+            "success": False,
             "error": "An unexpected server error occurred.",
             "details": str(e)
         }), 500
