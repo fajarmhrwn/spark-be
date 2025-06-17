@@ -1226,7 +1226,6 @@ def predict_esp_failure_endpoint():
         # --- Validasi Input dari Request ---
         well_name = request.args.get('well', None)
         analysis_window_hours = request.args.get('window_hours', 3, type=int)
-
         if not well_name:
             return jsonify({"success": False, "error": "Query parameter 'well' is required."}), 400
 
@@ -1234,16 +1233,15 @@ def predict_esp_failure_endpoint():
         try:
             # Corrected way to load models using DSSSavedModel API
             # Temporary dict for building the forecasting models
-            _forecasting_models_predictors = {}
+            forecasting_models_predictors = {}
             forecasting_model_map = {
                 'Discharge_Pressure': 'cDrOuPX1',
                 'Frequency': 'NVYSg2z1',
-                'Intake_Pressure': 'Nfu9lHcn', 
+                'Intake_Pressure': 'Nfu9lHcn',
                 'Intake_Temperature': 'ahE1NbPc',
                 'Motor_Temperature': 'rqKQCT1x',
                 'Vibration': '3uWzFhhA'
             }
-
             for key, model_id in forecasting_model_map.items():
                 saved_model_obj = project.get_saved_model(model_id)
                 active_version_info = saved_model_obj.get_active_version()
@@ -1254,10 +1252,9 @@ def predict_esp_failure_endpoint():
                 # get_version_details returns an object that can be used for prediction
                 # (e.g., DSSTrainedTimeseriesForecastingModelDetails or DSSTrainedPredictionModelDetails)
                 # These objects typically have a .predict() method.
-                _forecasting_models_predictors[key] = saved_model_obj.get_version_details(version_id)
-            
+                forecasting_models_predictors[key] = saved_model_obj.get_version_details(version_id)
             # Assign to the original variable name used later in the script
-            forecasting_models = _forecasting_models_predictors
+            forecasting_models = forecasting_models_predictors
 
             # Load the failure classifier
             classifier_model_id = '8L09CeBw'
@@ -1268,10 +1265,9 @@ def predict_esp_failure_endpoint():
             classifier_version_id = classifier_active_version_info['id']
             # This object will also have a .predict() method
             failure_classifier = classifier_saved_model_obj.get_version_details(classifier_version_id)
-
-        except Exception as e: # Catches RuntimeError from above and other exceptions during model loading
+        except Exception as e:  # Catches RuntimeError from above and other exceptions during model loading
             # Log the error for server-side debugging if desired
-            # print(f"Error during model loading: {str(e)}") 
+            # print(f"Error during model loading: {str(e)}")
             return jsonify({"success": False, "error": f"Failed to load models: {str(e)}"}), 503
 
         # --- Kamus untuk rekomendasi aksi yang sudah diparafrase ---
@@ -1360,37 +1356,57 @@ def predict_esp_failure_endpoint():
         # --- 1. Fetch & Filter Data ---
         print(f"PIPELINE START: Fetching data for well: {well_name}")
         raw_dataset = project.get_dataset('Artlift_Plus_Ops').get_as_core_dataset().get_dataframe()
-        buffer_hours = analysis_window_hours + 3 # Buffer 3 jam untuk kalkulasi rolling
-        end_time = datetime.now(UTC)
-        start_time = end_time - timedelta(hours=buffer_hours)
 
-        df = raw_dataset.get_dataframe(
-            filter=f"NPD_WELL_BORE_NAME == '{well_name}'", # Filter per sumur di level database lebih cepat
-            parse_dates=['primary_date']
-        )
-        df = df[(df['primary_date'] >= start_time) & (df['primary_date'] <= end_time)]
+        df = raw_dataset.copy()
+
+        # Ensure primary_date is in the correct format
+        import pandas as pd
+        df['primary_date'] = pd.to_datetime(df['primary_date'])
+
+        # Filter by well name only and get the most recent data
+        df = df[df['NPD_WELL_BORE_NAME'] == well_name]
 
         if df.empty:
-            return jsonify({"success": False, "message": f"No data found for well '{well_name}' in the last {buffer_hours} hours."}), 404
+            return jsonify({"success": False, "message": f"No data found for well '{well_name}'."}), 404
+
+        # Sort by date and get the most recent data
+        df = df.sort_values(by='primary_date', ascending=False)
+
+        # Calculate how many records we need based on analysis window
+        # Assuming 10-minute intervals: analysis_window_hours * 6 records per hour + buffer
+        buffer_records = (analysis_window_hours + 3) * 6  # Buffer 3 jam untuk kalkulasi rolling
+        max_records_needed = min(buffer_records, len(df))  # Don't exceed available data
+
+        # Take the most recent records
+        df = df.head(max_records_needed)
+
+        # Sort back to chronological order for processing
+        df = df.sort_values(by='primary_date', ascending=True)
+
+        if df.empty:
+            return jsonify({"success": False, "message": f"No sufficient data found for well '{well_name}' for analysis."}), 404
+
+        if df.empty:
+            return jsonify({"success": False, "message": f"No sufficient data found for well '{well_name}' for analysis."}), 404
 
         df.columns = [c.replace(' ', '_') for c in df.columns]
         df = df.sort_values(by='primary_date')
 
         # --- 2. On-the-fly Forecasting ---
         print("PIPELINE STEP 2: Running on-the-fly forecasting...")
-        # The `forecasting_models` variable now contains the correct predictor objects.
+        # The forecasting_models variable now contains the correct predictor objects.
         for param, predictor in forecasting_models.items():
             param_clean = param.replace('_', ' ')
             pred_df = predictor.predict(df.rename(columns=lambda c: c.replace('_', ' ')))
             df[f'{param}_predicted'] = pred_df['prediction']
             df[f'{param}_residual'] = df[param.replace(' ', '_')] - df[f'{param}_predicted']
-            
+
         # --- 3. On-the-fly Feature Engineering & Trend Categorization ---
         print("PIPELINE STEP 3: Running feature engineering...")
-        WINDOW_PERIODS = int(analysis_window_hours * 6) # Asumsi 10 menit interval
+        WINDOW_PERIODS = int(analysis_window_hours * 6)  # Asumsi 10 menit interval
         SLOPE_THRESHOLD = 0.01
-
         cols_to_engineer = ['Discharge_Pressure', 'Frequency', 'Intake_Pressure', 'Intake_Temperature', 'Motor_Temperature', 'Vibration', 'OIL_RATE_numeric']
+
         for col in cols_to_engineer:
             df[f'{col}_slope'] = df[col].diff()
             df[f'{col}_trend'] = np.select([df[f'{col}_slope'] > SLOPE_THRESHOLD, df[f'{col}_slope'] < -SLOPE_THRESHOLD], ['Increase', 'Decrease'], default='Constant')
@@ -1398,7 +1414,7 @@ def predict_esp_failure_endpoint():
             df[f'{col}_residual_avg'] = rolling_window.mean()
             df[f'{col}_residual_std'] = rolling_window.std()
 
-        df['Ampere_trend'] = 'Constant' # Placeholder
+        df['Ampere_trend'] = 'Constant'  # Placeholder
         df.fillna(method='ffill', inplace=True)
         df.fillna(method='bfill', inplace=True)
 
@@ -1408,12 +1424,10 @@ def predict_esp_failure_endpoint():
         # --- 4. Final Classification ---
         print("PIPELINE STEP 4: Making final failure classification...")
         latest_data_point = df.tail(1)
-
         # Ganti nama kolom kembali ke format asli jika model dilatih dengan spasi
         latest_data_point_renamed = latest_data_point.rename(columns=lambda c: c.replace('_', ' '))
-        # The `failure_classifier` variable now contains the correct predictor object.
+        # The failure_classifier variable now contains the correct predictor object.
         prediction_result = failure_classifier.predict(latest_data_point_renamed)
-
         final_prediction = prediction_result['prediction'][0]
         prediction_proba = prediction_result['probas'][final_prediction][0]
 
@@ -1442,7 +1456,6 @@ def predict_esp_failure_endpoint():
                 "Oil_Rate_Trend": latest_data_point['OIL_RATE_numeric_trend'].iloc[0]
             }
         })
-
     except Exception as e:
         print(f"FATAL ERROR in endpoint: {str(e)}")
         # Adding traceback for more detailed server-side logging
