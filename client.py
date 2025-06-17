@@ -30,9 +30,24 @@ class Dataiku(metaclass=SingletonMeta):
             self.client = dataiku.api_client()
         else:
             self.client = Dataiku.client  # Use the existing client
+            
 if __name__ == "__main__":
-  client = Dataiku().client
-  project = client.get_default_project()
-  print(client.list_project_keys())
-  for d in project.list_datasets():
-    print(d.name)
+    try:
+        client = Dataiku().client
+        project = client.get_default_project()
+        print("=== Models ===")
+        
+        # Get list of all models in project
+        models = project.list_saved_models()
+        for model in models:
+            print(f"- {model.get('name', 'N/A')} (Type: {model.get('type', 'N/A')})")
+            print(f"  ID: {model.get('id', 'N/A')}")
+        
+        # List ML tasks
+        print("\n=== ML Tasks ===")
+        ml_tasks = project.list_ml_tasks()
+        for task in ml_tasks:
+            print(f"- {task.get_name()}")
+            
+    except Exception as e:
+        print(f"Error: {str(e)}")

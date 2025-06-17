@@ -857,3 +857,297 @@ def get_map():
             "error": str(e),
             "message": "Failed to fetch map data"
         }), 500
+
+@fetch_api.route("/predict/ccus-trap", methods=["POST"])
+def predict_ccus_trap():
+    try:
+        project = client.get_default_project()
+        input_data = request.get_json()
+        
+        # Get the model
+        model = project.get_saved_model('3qgVTU8C')
+        
+        # Prepare prediction
+        prediction_flowtask = model.get_prediction_flowtask()
+        prediction = prediction_flowtask.predict_raw(input_data)
+        
+        return jsonify({
+            "success": True,
+            "prediction": prediction,
+            "model_info": {
+                "id": "3qgVTU8C",
+                "name": "CCUS Trap Prediction",
+                "type": "PREDICTION"
+            }
+        })
+        
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to predict CCUS trap"
+        }), 500
+
+@fetch_api.route("/predict/ccus-go-nogo", methods=["POST"])
+def predict_ccus_go_nogo():
+    try:
+        project = client.get_default_project()
+        input_data = request.get_json()
+        
+        # Get the model
+        model = project.get_saved_model('UAmBxlg8')
+        
+        # Prepare prediction
+        prediction_flowtask = model.get_prediction_flowtask()
+        prediction = prediction_flowtask.predict_raw(input_data)
+        
+        return jsonify({
+            "success": True,
+            "prediction": prediction,
+            "model_info": {
+                "id": "UAmBxlg8",
+                "name": "Predict Go/Nogo - CCUS",
+                "type": "PREDICTION"
+            }
+        })
+        
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to predict CCUS Go/Nogo"
+        }), 500
+
+@fetch_api.route("/predict/ccus-eor", methods=["POST"])
+def predict_ccus_eor():
+    try:
+        project = client.get_default_project()
+        input_data = request.get_json()
+        
+        # Get the model
+        model = project.get_saved_model('Zby5vsSm')
+        
+        # Prepare prediction
+        prediction_flowtask = model.get_prediction_flowtask()
+        prediction = prediction_flowtask.predict_raw(input_data)
+        
+        return jsonify({
+            "success": True,
+            "prediction": prediction,
+            "model_info": {
+                "id": "Zby5vsSm",
+                "name": "Predict EOR - CCUS Study",
+                "type": "PREDICTION"
+            }
+        })
+        
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to predict CCUS EOR"
+        }), 500
+    
+@fetch_api.route("/predict/esp-failure", methods=["GET"])
+def predict_esp_failure_endpoint():
+    project = client.get_default_project()
+    try:
+        # --- Validasi Input dari Request ---
+        well_name = request.args.get('well', None)
+        analysis_window_hours = request.args.get('window_hours', 3, type=int)
+        
+        if not well_name:
+            return jsonify({"success": False, "error": "Query parameter 'well' is required."}), 400
+
+        # --- Muat semua model forecasting ---
+        try:
+            forecasting_models = {
+                'Discharge_Pressure': project.get_saved_model('cDrOuPX1').get_trained_model().get_predictor(),
+                'Frequency': project.get_saved_model('NVYSg2z1').get_trained_model().get_predictor(),
+                'Intake_Pressure': project.get_saved_model('Nfu9lHcn').get_trained_model().get_predictor(), 
+                'Intake_Temperature': project.get_saved_model('ahE1NbPc').get_trained_model().get_predictor(),
+                'Motor_Temperature': project.get_saved_model('rqKQCT1x').get_trained_model().get_predictor(),
+                'Vibration': project.get_saved_model('3uWzFhhA').get_trained_model().get_predictor()
+            }
+            failure_classifier = project.get_saved_model('8L09CeBw').get_trained_model().get_predictor()
+
+        except Exception as e:
+            return jsonify({"success": False, "error": f"Failed to load models: {str(e)}"}), 503
+
+        # --- Kamus untuk rekomendasi aksi yang sudah diparafrase ---
+        PRESCRIPTIVE_ACTIONS = {
+            "Low PI": {
+                "priority": "High",
+                "primary_action": "Investigate potential inflow restriction.",
+                "steps": [
+                    "Check current fluid level and calculate Bottom Hole Pressure (BHP).",
+                    "Compare current BHP with historical data to confirm productivity decline.",
+                    "If pump design allows, consider adjusting tubing head pressure to match lower inflow."
+                ],
+                "possible_causes": "Scale buildup, paraffin deposition, or reservoir pressure depletion."
+            },
+            "Tubing Leak": { 
+                "priority": "Critical", 
+                "primary_action": "Confirm integrity of the production tubing immediately.", 
+                "steps": [
+                    "Initiate a wellhead pressure test to check for leaks.", 
+                    "If pressure test is inconclusive, perform a dead-head test.", 
+                    "Prepare for potential well intervention if a leak is confirmed."
+                ], 
+                "possible_causes": "Corrosion, connection failure, or mechanical damage." 
+            },
+            "Pump Wear": { 
+                "priority": "Medium", 
+                "primary_action": "Evaluate pump performance degradation.", 
+                "steps": [
+                    "Analyze system efficiency trends (e.g., energy consumption per barrel lifted).", 
+                    "Review vibration data for sustained increases.", 
+                    "Begin planning for a future pump replacement (workover)."
+                ], 
+                "possible_causes": "Abrasive wear, corrosion, or operating outside of design range." 
+            },
+            "Sand Ingestion": { 
+                "priority": "High", 
+                "primary_action": "Mitigate solids production to prevent catastrophic pump failure.", 
+                "steps": [
+                    "Immediately check surface equipment for sand accumulation.", 
+                    "Consider reducing flow rate to minimize solids lifting.", 
+                    "Evaluate need for downhole sand control for next workover."
+                ], 
+                "possible_causes": "Formation failure, high drawdown, or ineffective sand control." 
+            },
+            "Closed Valve (SSSV)": { 
+                "priority": "High", 
+                "primary_action": "Verify status of downhole and surface safety valves.", 
+                "steps": [
+                    "Confirm the intended position of the SSSV and surface valves.", 
+                    "If unintentional, contact Field Service Tech for immediate on-site inspection.", 
+                    "Do not restart pump until valve status is confirmed."
+                ], 
+                "possible_causes": "Accidental closure, control line failure, or safety shutdown." 
+            },
+            "Increase in Frequency": { 
+                "priority": "Low", 
+                "primary_action": "Review recent VSD (Variable Speed Drive) frequency changes.", 
+                "steps": [
+                    "Verify if frequency increase was an intentional operational change.", 
+                    "Monitor intake pressure closely to avoid pump-off condition.", 
+                    "If unintentional, revert to the previous setpoint and monitor."
+                ], 
+                "possible_causes": "Manual operator adjustment or automated optimization." 
+            },
+            "Normal Operation": { 
+                "priority": "Info", 
+                "primary_action": "System operating within expected parameters.", 
+                "steps": [
+                    "Continue routine monitoring.", 
+                    "No immediate intervention required."
+                ], 
+                "possible_causes": "N/A" 
+            },
+            "default": { 
+                "priority": "High", 
+                "primary_action": "Unrecognized pattern detected. Manual analysis required.", 
+                "steps": [
+                    "Review recent trends of all sensor data.", 
+                    "Compare current operations with the daily well plan.", 
+                    "Alert senior production engineer for investigation."
+                ], 
+                "possible_causes": "Complex failure mode, sensor malfunction, or a new, unlearned pattern." 
+            }
+        }
+
+        # --- 1. Fetch & Filter Data ---
+        print(f"PIPELINE START: Fetching data for well: {well_name}")
+        raw_dataset = dataiku.Dataset("Artlift_Plus_Ops")
+        buffer_hours = analysis_window_hours + 3 # Buffer 3 jam untuk kalkulasi rolling
+        end_time = datetime.now()
+        start_time = end_time - timedelta(hours=buffer_hours)
+
+        df = raw_dataset.get_dataframe(
+            filter=f"NPD_WELL_BORE_NAME == '{well_name}'", # Filter per sumur di level database lebih cepat
+            parse_dates=['primary_date']
+        )
+        df = df[(df['primary_date'] >= start_time) & (df['primary_date'] <= end_time)]
+
+        if df.empty:
+            return jsonify({"success": False, "message": f"No data found for well '{well_name}' in the last {buffer_hours} hours."}), 404
+
+        df.columns = [c.replace(' ', '_') for c in df.columns]
+        df = df.sort_values(by='primary_date')
+        
+        # --- 2. On-the-fly Forecasting ---
+        print("PIPELINE STEP 2: Running on-the-fly forecasting...")
+        for param, predictor in forecasting_models.items():
+            param_clean = param.replace('_', ' ')
+            pred_df = predictor.predict(df.rename(columns=lambda c: c.replace('_', ' ')))
+            df[f'{param}_predicted'] = pred_df['prediction']
+            df[f'{param}_residual'] = df[param.replace(' ', '_')] - df[f'{param}_predicted']
+        # --- 3. On-the-fly Feature Engineering & Trend Categorization ---
+        print("PIPELINE STEP 3: Running feature engineering...")
+        WINDOW_PERIODS = int(analysis_window_hours * 6) # Asumsi 10 menit interval
+        SLOPE_THRESHOLD = 0.01
+        
+        cols_to_engineer = ['Discharge_Pressure', 'Frequency', 'Intake_Pressure', 'Intake_Temperature', 'Motor_Temperature', 'Vibration', 'OIL_RATE_numeric']
+        for col in cols_to_engineer:
+            df[f'{col}_slope'] = df[col].diff()
+            df[f'{col}_trend'] = np.select([df[f'{col}_slope'] > SLOPE_THRESHOLD, df[f'{col}_slope'] < -SLOPE_THRESHOLD], ['Increase', 'Decrease'], default='Constant')
+            rolling_window = df[f'{col}_residual'].rolling(window=WINDOW_PERIODS, min_periods=1)
+            df[f'{col}_residual_avg'] = rolling_window.mean()
+            df[f'{col}_residual_std'] = rolling_window.std()
+
+        df['Ampere_trend'] = 'Constant' # Placeholder
+        df.fillna(method='ffill', inplace=True)
+        df.fillna(method='bfill', inplace=True)
+        
+        if df.empty:
+            return jsonify({"success": False, "message": "Dataframe became empty after feature engineering."}), 500
+            
+        # --- 4. Final Classification ---
+        print("PIPELINE STEP 4: Making final failure classification...")
+        latest_data_point = df.tail(1)
+        
+        # Ganti nama kolom kembali ke format asli jika model dilatih dengan spasi
+        latest_data_point_renamed = latest_data_point.rename(columns=lambda c: c.replace('_', ' '))
+        prediction_result = failure_classifier.predict(latest_data_point_renamed)
+        
+        final_prediction = prediction_result['prediction'][0]
+        prediction_proba = prediction_result['probas'][final_prediction][0]
+
+        # --- 5. Get Action & Format Response ---
+        print(f"PIPELINE END. Result: {final_prediction}")
+        action_details = PRESCRIPTIVE_ACTIONS.get(final_prediction, PRESCRIPTIVE_ACTIONS["default"])
+        
+        return jsonify({
+            "success": True,
+            "well_name": well_name,
+            "prediction_timestamp_utc": datetime.utcnow().isoformat(),
+            "prediction_details": {
+                "failure_mode": final_prediction,
+                "confidence": round(float(prediction_proba), 4),
+                "priority": action_details.get("priority", "Unknown")
+            },
+            "recommended_action": {
+                "summary": action_details.get("primary_action", "No action defined."),
+                "detailed_steps": action_details.get("steps", []),
+                "possible_causes": action_details.get("possible_causes", "N/A")
+            },
+            "contributing_factors": {
+                "Intake_Pressure_Trend": latest_data_point['Intake_Pressure_trend'].iloc[0],
+                "Discharge_Pressure_Trend": latest_data_point['Discharge_Pressure_trend'].iloc[0],
+                "Vibration_Trend": latest_data_point['Vibration_trend'].iloc[0],
+                "Oil_Rate_Trend": latest_data_point['OIL_RATE_numeric_trend'].iloc[0]
+            }
+        })
+
+    except Exception as e:
+        print(f"FATAL ERROR in endpoint: {str(e)}")
+        return jsonify({
+            "success": False, 
+            "error": "An unexpected server error occurred.",
+            "details": str(e)
+        }), 500
+    
