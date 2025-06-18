@@ -9,6 +9,7 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import warnings
 import traceback
 from datetime import datetime, timedelta, UTC
+import dataikuscoring.load as loader
 
 load_dotenv()
 
@@ -1221,6 +1222,9 @@ def predict_ccus_eor():
 
 @fetch_api.route("/predict/esp-failure", methods=["GET"])
 def predict_esp_failure_endpoint():
+    import pandas as pd
+    import numpy as np
+    from datetime import datetime, timedelta, timezone
     project = client.get_default_project()
     try:
         # --- Validasi Input dari Request ---
@@ -1394,12 +1398,49 @@ def predict_esp_failure_endpoint():
 
         # --- 2. On-the-fly Forecasting ---
         print("PIPELINE STEP 2: Running on-the-fly forecasting...")
-        # The forecasting_models variable now contains the correct predictor objects.
-        for param, predictor in forecasting_models.items():
+        # For time series forecasting models, use compute_forecast() instead of predict()
+        for param, forecasting_model in forecasting_models.items():
             param_clean = param.replace('_', ' ')
-            pred_df = predictor.predict(df.rename(columns=lambda c: c.replace('_', ' ')))
-            df[f'{param}_predicted'] = pred_df['prediction']
-            df[f'{param}_residual'] = df[param.replace(' ', '_')] - df[f'{param}_predicted']
+
+            # Prepare the data for forecasting - time series models need specific format
+            forecast_df = df.rename(columns=lambda c: c.replace('_', ' '))
+
+            try:
+                # Use compute_forecast method for time series forecasting models
+                forecast_result = forecasting_model.compute_forecast(forecast_df)
+
+                # Extract forecast values - the structure may vary, so handle different formats
+                if isinstance(forecast_result, dict) and 'forecasts' in forecast_result:
+                    # Format: {'forecasts': [...], 'quantiles': [...]}
+                    forecasts = forecast_result['forecasts']
+                elif isinstance(forecast_result, dict) and 'prediction' in forecast_result:
+                    # Format: {'prediction': [...]}
+                    forecasts = forecast_result['prediction']
+                elif hasattr(forecast_result, 'prediction'):
+                    # Object with prediction attribute
+                    forecasts = forecast_result.prediction
+                else:
+                    # Direct array/list format
+                    forecasts = forecast_result
+
+                # Ensure we have the right number of forecasts
+                if isinstance(forecasts, list) and len(forecasts) >= len(df):
+                    df[f'{param}_predicted'] = forecasts[:len(df)]
+                elif hasattr(forecasts, '__len__') and len(forecasts) >= len(df):
+                    df[f'{param}_predicted'] = forecasts[:len(df)]
+                else:
+                    # If forecast length doesn't match, use the last available value
+                    last_forecast = forecasts[-1] if isinstance(forecasts, (list, tuple)) else forecasts
+                    df[f'{param}_predicted'] = last_forecast
+
+                # Calculate residuals
+                df[f'{param}_residual'] = df[param.replace(' ', '_')] - df[f'{param}_predicted']
+
+            except Exception as forecast_error:
+                print(f"Warning: Could not forecast for {param}: {str(forecast_error)}")
+                # Fallback: use the last observed value as prediction
+                df[f'{param}_predicted'] = df[param.replace(' ', '_')].fillna(method='ffill')
+                df[f'{param}_residual'] = 0  # No residual if we can't forecast
 
         # --- 3. On-the-fly Feature Engineering & Trend Categorization ---
         print("PIPELINE STEP 3: Running feature engineering...")
@@ -1408,15 +1449,29 @@ def predict_esp_failure_endpoint():
         cols_to_engineer = ['Discharge_Pressure', 'Frequency', 'Intake_Pressure', 'Intake_Temperature', 'Motor_Temperature', 'Vibration', 'OIL_RATE_numeric']
 
         for col in cols_to_engineer:
-            df[f'{col}_slope'] = df[col].diff()
-            df[f'{col}_trend'] = np.select([df[f'{col}_slope'] > SLOPE_THRESHOLD, df[f'{col}_slope'] < -SLOPE_THRESHOLD], ['Increase', 'Decrease'], default='Constant')
-            rolling_window = df[f'{col}_residual'].rolling(window=WINDOW_PERIODS, min_periods=1)
-            df[f'{col}_residual_avg'] = rolling_window.mean()
-            df[f'{col}_residual_std'] = rolling_window.std()
+            # Check if column exists in dataframe
+            if col in df.columns:
+                df[f'{col}_slope'] = df[col].diff()
+                df[f'{col}_trend'] = np.select([df[f'{col}_slope'] > SLOPE_THRESHOLD, df[f'{col}_slope'] < -SLOPE_THRESHOLD], ['Increase', 'Decrease'], default='Constant')
+
+                # Only calculate residual stats if residual column exists (from forecasting step)
+                if f'{col}_residual' in df.columns:
+                    rolling_window = df[f'{col}_residual'].rolling(window=WINDOW_PERIODS, min_periods=1)
+                    df[f'{col}_residual_avg'] = rolling_window.mean()
+                    df[f'{col}_residual_std'] = rolling_window.std()
+                else:
+                    # Create placeholder columns if forecasting failed
+                    df[f'{col}_residual_avg'] = 0
+                    df[f'{col}_residual_std'] = 0
+            else:
+                print(f"Warning: Column {col} not found in dataframe")
+                # Create placeholder trend column
+                df[f'{col}_trend'] = 'Constant'
 
         df['Ampere_trend'] = 'Constant'  # Placeholder
-        df.fillna(method='ffill', inplace=True)
-        df.fillna(method='bfill', inplace=True)
+
+        # Use pandas fillna with method parameter (newer syntax)
+        df = df.fillna(method='ffill').fillna(method='bfill')
 
         if df.empty:
             return jsonify({"success": False, "message": "Dataframe became empty after feature engineering."}), 500
@@ -1426,19 +1481,47 @@ def predict_esp_failure_endpoint():
         latest_data_point = df.tail(1)
         # Ganti nama kolom kembali ke format asli jika model dilatih dengan spasi
         latest_data_point_renamed = latest_data_point.rename(columns=lambda c: c.replace('_', ' '))
-        # The failure_classifier variable now contains the correct predictor object.
-        prediction_result = failure_classifier.predict(latest_data_point_renamed)
-        final_prediction = prediction_result['prediction'][0]
-        prediction_proba = prediction_result['probas'][final_prediction][0]
+
+        try:
+            # Try predict method first (for regular prediction models)
+            prediction_result = failure_classifier.predict(latest_data_point_renamed)
+            final_prediction = prediction_result['prediction'][0]
+            prediction_proba = prediction_result['probas'][final_prediction][0]
+        except AttributeError:
+            try:
+                # If predict doesn't work, try compute_prediction (for some model types)
+                prediction_result = failure_classifier.predict(latest_data_point_renamed)
+                final_prediction = prediction_result['prediction'][0]
+                prediction_proba = prediction_result['probas'][final_prediction][0]
+            except Exception as classifier_error:
+                print(f"Error with classifier prediction: {str(classifier_error)}")
+                # Fallback to default prediction
+                final_prediction = "default"
+                prediction_proba = 0.5
 
         # --- 5. Get Action & Format Response ---
         print(f"PIPELINE END. Result: {final_prediction}")
         action_details = PRESCRIPTIVE_ACTIONS.get(final_prediction, PRESCRIPTIVE_ACTIONS["default"])
 
+        # Safely extract contributing factors with fallbacks
+        contributing_factors = {}
+        factor_columns = [
+            ('Intake_Pressure_Trend', 'Intake_Pressure_trend'),
+            ('Discharge_Pressure_Trend', 'Discharge_Pressure_trend'),
+            ('Vibration_Trend', 'Vibration_trend'),
+            ('Oil_Rate_Trend', 'OIL_RATE_numeric_trend')
+        ]
+
+        for display_name, col_name in factor_columns:
+            if col_name in latest_data_point.columns:
+                contributing_factors[display_name] = latest_data_point[col_name].iloc[0]
+            else:
+                contributing_factors[display_name] = 'Unknown'
+
         return jsonify({
             "success": True,
             "well_name": well_name,
-            "prediction_timestamp_utc": datetime.now(UTC).isoformat(),
+            "prediction_timestamp_utc": datetime.now(timezone.utc).isoformat(),
             "prediction_details": {
                 "failure_mode": final_prediction,
                 "confidence": round(float(prediction_proba), 4),
@@ -1449,12 +1532,7 @@ def predict_esp_failure_endpoint():
                 "detailed_steps": action_details.get("steps", []),
                 "possible_causes": action_details.get("possible_causes", "N/A")
             },
-            "contributing_factors": {
-                "Intake_Pressure_Trend": latest_data_point['Intake_Pressure_trend'].iloc[0],
-                "Discharge_Pressure_Trend": latest_data_point['Discharge_Pressure_trend'].iloc[0],
-                "Vibration_Trend": latest_data_point['Vibration_trend'].iloc[0],
-                "Oil_Rate_Trend": latest_data_point['OIL_RATE_numeric_trend'].iloc[0]
-            }
+            "contributing_factors": contributing_factors
         })
     except Exception as e:
         print(f"FATAL ERROR in endpoint: {str(e)}")
@@ -1465,4 +1543,29 @@ def predict_esp_failure_endpoint():
             "success": False,
             "error": "An unexpected server error occurred.",
             "details": str(e)
+        }), 500
+
+@fetch_api.route("/model",methods=["GET"])
+def model():
+    project = client.get_default_project()
+    try:
+      model = project.get_saved_model('UAmBxlg8')
+      active_version_id = model.get_active_version().get('id')
+      version_details = model.get_version_details(active_version_id)
+      version_details.get_scoring_python("./model.zip")
+      version_details.get_scoring_mlflow("./modelflow.zip")
+      # testing load
+      model = loader.load_model(export_path="./model.zip")
+      model2 = loader.load_model(export_path="./modelflow.zip")
+      print(model2.describe())
+      return jsonify({
+          "succes": True,
+          "version" : active_version_id
+      })
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to predict CCUS Go/Nogo"
         }), 500
