@@ -1130,19 +1130,128 @@ def productionStatAll():
 @fetch_api.route("/predict/ccus-trap", methods=["POST"])
 def predict_ccus_trap():
     try:
-        project = client.get_default_project()
-        input_data = request.get_json()
+        # Read JSON data from client
+        client_data = request.get_json()
 
-        # Get the model
-        model = project.get_saved_model('3qgVTU8C')
+        # Validate required parameters
+        required_params = ['type', 'latitude', 'region', 'formation', 'unit_designation', 'rocktype']
+        for param in required_params:
+            if param not in client_data:
+                return jsonify({
+                    "success": False,
+                    "error": f"Missing required parameter: {param}"
+                }), 400
 
-        # Prepare prediction
-        prediction_flowtask = model.get_prediction_flowtask()
-        prediction = prediction_flowtask.predict_raw(input_data)
+        model = loader.load_model('./models/ccstrap.zip')
+
+        # Template data
+        template_input = {
+            "country": "Indonesia",
+            "permeability_md": "159",
+            "type": "Saline",
+            "area": "Northern Territory: Offshore",
+            "project_spec": False,
+            "basin": "Bonaparte",
+            "region": "Oceania",
+            "rocktype": "Clastic",
+            "unit_designation": "Saline Aquifer",
+            "pre_injection_pressure": "0",
+            "flowtest": False,
+            "frac_pressure": "0",
+            "formation": "Sandpiper Sandstone Formation",
+            "source_of_storage_efficiency_factor": "Bradshaw et al 2009. Data from static and dynamic models used to constrain inputs (variability evaluated using Monte Carlo model to address uncertainties). Probabilistic effective storage estimate.",
+            "pore_compressibility": "0",
+            "brine_salinity": "0",
+            "depth": "2200",
+            "age": "Lower Cretaceous",
+            "pressure_psig": 0.0,
+            "longitude": 129.74277777777777,
+            "co2_density": 0.0,
+            "well_density": 0.00425,
+            "thickness_m": 168.5,
+            "site_area_km2": 8000.0,
+            "latitude": -13.227500000000001,
+            "single_well_discovery_area": 200,
+            "well_count": 34,
+            "ntg": 0.97,
+            "porosity": 19.7,
+            "storage_unit_type": None,
+            "code": None,
+            "site_name": None,
+            "discovery_status": None,
+            "publication": None,
+            "project_history": None,
+            "development_plan": None,
+            "containment_summary": None,
+            "assessment_notes": None,
+            "year_of_publication": None,
+            "date_of_assessment": None,
+            "source_of_analogue": None,
+            "assessment": None,
+            "stored_low": None,
+            "stored_mid": None,
+            "stored_high": None,
+            "on_injection_low": None,
+            "on_injection_mid": None,
+            "on_injection_high": None,
+            "approved_for_development_low": None,
+            "approved_for_development_mid": None,
+            "approved_for_development_high": None,
+            "justified_for_development_low": None,
+            "justified_for_development_mid": None,
+            "justified_for_development_high": None,
+            "development_pending_low": None,
+            "development_pending_mid": None,
+            "development_pending_high": None,
+            "development_on_hold_low": None,
+            "development_on_hold_mid": None,
+            "development_on_hold_high": None,
+            "development_not_viable_low": None,
+            "development_not_viable_mid": None,
+            "development_not_viable_high": None,
+            "development_unclarified_low": None,
+            "development_unclarified_mid": None,
+            "development_unclarified_high": None,
+            "inaccessible_subcommercial_low": None,
+            "inaccessible_subcommercial_mid": None,
+            "inaccessible_subcommercial_high": None,
+            "prospect_low": None,
+            "prospect_mid": None,
+            "prospect_high": None,
+            "lead_low": None,
+            "lead_mid": None,
+            "lead_high": None,
+            "sequence_play_low": None,
+            "sequence_play_mid": None,
+            "sequence_play_high": None,
+            "basin_play_low": None,
+            "basin_play_mid": None,
+            "basin_play_high": None,
+            "undiscovered_inaccessible_low": None,
+            "undiscovered_inaccessible_mid": None,
+            "undiscovered_inaccessible_high": None,
+            "total_low": None,
+            "total_mid": None,
+            "total_high": None,
+            "sum_low": None,
+            "sum_mid": None,
+            "sum_high": None,
+            "p50_pore_volume_mmcum": None,
+            "prop_considered_discovered": None,
+            "storage_efficiency": None
+        }
+
+        # Override template_input with client_data if available
+        for key in template_input:
+            if key in client_data:
+                template_input[key] = client_data[key]
+
+        df = pd.DataFrame([template_input])
+        prediction = model.predict(df)
 
         return jsonify({
             "success": True,
-            "prediction": prediction,
+            "prediction": prediction[0],
             "model_info": {
                 "id": "3qgVTU8C",
                 "name": "CCUS Trap Prediction",
@@ -1161,26 +1270,67 @@ def predict_ccus_trap():
 @fetch_api.route("/predict/ccus-eor", methods=["POST"])
 def predict_ccus_eor():
     try:
-        project = client.get_default_project()
-        input_data = request.get_json()
+        # Read JSON data from client
+        client_data = request.get_json()
+        # Validate required parameters
+        required_params = ['porosity', 'permeability', 'depth', 'oil_gravity', 'oil_viscosity', 'formation']
+        for param in required_params:
+            if param not in client_data:
+                return jsonify({
+                    "success": False,
+                    "error": f"Missing required parameter: {param}"
+                }), 400
 
-        # Get the model
-        model = project.get_saved_model('Zby5vsSm')
+        model = loader.load_model('./models/ccuseor.zip')
+        if client_data['formation'] == "Sandstone":
+            client_data['formation'] = "S"
+        elif client_data['formation'] == "Carbonate":
+            client_data['formation'] = "C"
 
-        # Prepare prediction
-        prediction_flowtask = model.get_prediction_flowtask()
-        prediction = prediction_flowtask.predict_raw(input_data)
+        template_input = {
+            # 🟦 Categorical - Dummy encoding
+            "operator": "Berry",
+            "Field": "South Midway–Sunset",
+            "State": "Calif.",
+            "County": "Kern",
+            "Start Date": "1964",
+            "Pay zone": "Monarch",
+            "Formation": client_data['formation'],
+            # 🟩 Numerical - Avg-std rescaling
+            "Area, acres": 600,
+            "Total Wells prod.": 1200,
+            "Total Wells Inj.": None,  # Empty → None
+            "Porosity": client_data['porosity'],
+            "Permeabiliy, mD": client_data['permeability'],  # Fixed typo here
+            "Depth, ft": client_data['depth'],
+            "Oil Gravity, API": client_data['oil_gravity'],
+            "Oil Viscosity, cP": client_data['oil_viscosity'],
+            "Temperature, F": 80,
+            "Total Prod, b/d": 10000,
+            "Enhanced Prod. b/d": 7000,
+            # ❌ Rejected columns and non-inputs
+            "EOR Type": None,
+            "col_19": None,
+            "col_20": None,
+            "col_21": None,
+            "col_22": None,
+            "col_23": None,
+            "col_24": None,
+            "col_25": None,
+            "EOR_Type_Declutter": None
+        }
 
+        df = pd.DataFrame([template_input])
+        prediction = model.predict(df)
         return jsonify({
             "success": True,
-            "prediction": prediction,
+            "prediction": prediction[0],
             "model_info": {
                 "id": "Zby5vsSm",
                 "name": "Predict EOR - CCUS Study",
                 "type": "PREDICTION"
             }
         })
-
     except Exception as e:
         print("Error:", e)
         return jsonify({
@@ -1270,73 +1420,73 @@ def predict_ccus_eor():
 #             "message": "Gagal melakukan prediksi. Pastikan format input data sudah benar."
 #         }), 500
 
-@fetch_api.route("/predict/ccus-go-nogo", methods=["POST"])
-def predict_ccus_go_nogo():
-    project = client.get_default_project()
-    try:
-        # 1. Ambil data JSON dari request
-        input_data = request.get_json()
-        if not input_data:
-            return jsonify({"success": False, "error": "Invalid input", "message": "Request body harus berisi JSON."}), 400
+# @fetch_api.route("/predict/ccus-go-nogo", methods=["POST"])
+# def predict_ccus_go_nogo():
+#     project = client.get_default_project()
+#     try:
+#         # 1. Ambil data JSON dari request
+#         input_data = request.get_json()
+#         if not input_data:
+#             return jsonify({"success": False, "error": "Invalid input", "message": "Request body harus berisi JSON."}), 400
 
-        model = project.get_saved_model('UAmBxlg8')
+#         model = project.get_saved_model('UAmBxlg8')
 
-        # === PERBAIKAN FINAL DI SINI ===
-        # A. Dapatkan daftar semua fitur yang dibutuhkan oleh model.
-        active_version_id = model.get_active_version().get('id')
-        version_details = model.get_version_details(active_version_id)
-        version_details.get_scoring_python("./model.zip")
-        # testing load
-        model = loader.load_model(export_path="./model.zip")
+#         # === PERBAIKAN FINAL DI SINI ===
+#         # A. Dapatkan daftar semua fitur yang dibutuhkan oleh model.
+#         active_version_id = model.get_active_version().get('id')
+#         version_details = model.get_version_details(active_version_id)
+#         version_details.get_scoring_python("./model.zip")
+#         # testing load
+#         model = loader.load_model(export_path="./model.zip")
         
-        # Gunakan .get_raw() untuk mengubah objek detail menjadi dictionary
-        raw_details = version_details.get_raw()
-        print(raw_details)
+#         # Gunakan .get_raw() untuk mengubah objek detail menjadi dictionary
+#         raw_details = version_details.get_raw()
+#         print(raw_details)
         
-        # Sekarang Anda bisa mengaksesnya sebagai dictionary
-        all_feature_names = list(raw_details['preprocessing']['per_feature'].keys())
+#         # Sekarang Anda bisa mengaksesnya sebagai dictionary
+#         all_feature_names = list(raw_details['preprocessing']['per_feature'].keys())
         
-        # B. Konversi JSON ke Pandas DataFrame dengan semua kolom yang dibutuhkan
-        input_df = pd.DataFrame(columns=all_feature_names, index=[0])
-        input_df.update(pd.Series(input_data))
+#         # B. Konversi JSON ke Pandas DataFrame dengan semua kolom yang dibutuhkan
+#         input_df = pd.DataFrame(columns=all_feature_names, index=[0])
+#         input_df.update(pd.Series(input_data))
 
-        # C. Lakukan prediksi untuk mendapatkan probabilitas
-        predict_proba_result = model.predict_proba(input_df)
-        print(" \nOutput dari model.:predict_proba()\n")
-        print(predict_proba_result)
+#         # C. Lakukan prediksi untuk mendapatkan probabilitas
+#         predict_proba_result = model.predict_proba(input_df)
+#         print(" \nOutput dari model.:predict_proba()\n")
+#         print(predict_proba_result)
 
-        # D. Terapkan threshold manual
-        threshold = 0.275
-        prob_true = predict_proba_result['true'][0]
-        prob_false = predict_proba_result['false'][0]
-        prediction_result = "true" if prob_true >= threshold else "false"
+#         # D. Terapkan threshold manual
+#         threshold = 0.275
+#         prob_true = predict_proba_result['true'][0]
+#         prob_false = predict_proba_result['false'][0]
+#         prediction_result = "true" if prob_true >= threshold else "false"
 
-        # E. Siapkan response dalam format JSON
-        return jsonify({
-            "success": True,
-            "prediction": prediction_result,
-            "probabilities": {
-                "false": float(prob_false),
-                "true": float(prob_true)
-            },
-            "threshold_used": threshold,
-            "model_info": "ForestClassifier(n_trees=100)"
-        })
+#         # E. Siapkan response dalam format JSON
+#         return jsonify({
+#             "success": True,
+#             "prediction": prediction_result,
+#             "probabilities": {
+#                 "false": float(prob_false),
+#                 "true": float(prob_true)
+#             },
+#             "threshold_used": threshold,
+#             "model_info": "ForestClassifier(n_trees=100)"
+#         })
 
-    except KeyError as e:
-        print(f"Error pada saat prediksi: Kunci tidak ditemukan. Error: {e}")
-        return jsonify({
-            "success": False,
-            "error": f"Key not found: {e}. Check model details or prediction output.",
-            "message": "Gagal memproses prediksi. Kunci yang dibutuhkan tidak ditemukan."
-        }), 500
-    except Exception as e:
-        print(f"Error pada saat prediksi: {e}")
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "message": "Gagal melakukan prediksi. Pastikan format input data sudah benar."
-        }), 500
+#     except KeyError as e:
+#         print(f"Error pada saat prediksi: Kunci tidak ditemukan. Error: {e}")
+#         return jsonify({
+#             "success": False,
+#             "error": f"Key not found: {e}. Check model details or prediction output.",
+#             "message": "Gagal memproses prediksi. Kunci yang dibutuhkan tidak ditemukan."
+#         }), 500
+#     except Exception as e:
+#         print(f"Error pada saat prediksi: {e}")
+#         return jsonify({
+#             "success": False,
+#             "error": str(e),
+#             "message": "Gagal melakukan prediksi. Pastikan format input data sudah benar."
+#         }), 500
 
 
 @fetch_api.route("/predict/esp-failure", methods=["GET"])
