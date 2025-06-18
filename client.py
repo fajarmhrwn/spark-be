@@ -37,35 +37,50 @@ if __name__ == "__main__":
         project = client.get_default_project()
         print("=== Models ===")
         
-        # Get list of all models in project
-        models = project.list_saved_models()
-        # for model in models:
-            # print(f"- {model.get('name', 'N/A')} (Type: {model.get('type', 'N/A')})")
-            # print(f"  ID: {model.get('id', 'N/A')}")
+        # # Get list of all models in project
+        # models = project.list_saved_models()
+        # # for model in models:
+        #     # print(f"- {model.get('name', 'N/A')} (Type: {model.get('type', 'N/A')})")
+        #     # print(f"  ID: {model.get('id', 'N/A')}")
         
-        # List ML tasks
-        # print("\n=== ML Tasks ===")
-        # ml_tasks = project.list_ml_tasks()
-        # 1. Get the saved model metadata
-        saved_model = project.get_saved_model("cDrOuPX1")
+        # # List ML tasks
+        # # print("\n=== ML Tasks ===")
+        # # ml_tasks = project.list_ml_tasks()
+        # # 1. Get the saved model metadata
+        # saved_model = project.get_saved_model("cDrOuPX1")
 
-        # 2. Get list of versions (you must have at least one trained version)
-        versions = saved_model.list_versions()
+        # # 2. Get list of versions (you must have at least one trained version)
+        # versions = saved_model.list_versions()
 
-        if not versions:
-            raise ValueError("No trained versions found for model 'cDrOuPX1'")
+        # if not versions:
+        #     raise ValueError("No trained versions found for model 'cDrOuPX1'")
 
-        # 3. Get the most recent version (or pick specific one)
-        latest_version_id = versions[0]['id']  # or use logic to pick one
-        trained_model = saved_model.get_version(latest_version_id)
+        # # 3. Get the most recent version (or pick specific one)
+        # latest_version_id = versions[0]['id']  # or use logic to pick one
+        # trained_model = saved_model.get_version(latest_version_id)
 
-        # 4. Get the predictor
-        predictor = trained_model.get_predictor()
+        # # 4. Get the predictor
+        # predictor = trained_model.get_predictor()
 
-        # a = models
-        # print(models[0].get("id", "mh8CKwbK"))
-        # for task in ml_tasks:
-            # print(f"- {task.get_name()}")
+
+        # # Dapatkan daftar semua skenario di project ini
+        scenarios = project.list_scenarios()
+
+        # Cetak nama dan ID dari setiap skenario
+        print("Daftar Skenario di Project Anda:\n")
+        if not scenarios:
+            print("Tidak ada skenario ditemukan di project ini.")
+        else:
+            # Print header untuk tabel
+            print(f"{'NAMA SKENARIO':<40} | {'ID SKENARIO'}")
+            print("-" * 60)
+            # Loop dan print setiap skenario
+            for scenario in scenarios:
+                scenario_name = scenario.get('name', 'N/A')
+                scenario_id = scenario.get('id', 'N/A')
+                print(f"{scenario_name:<40} | {scenario_id}")
+
+        print("\nSilakan salin ID skenario yang ingin Anda gunakan.")
             
     except Exception as e:
         print(f"Error: {str(e)}")
