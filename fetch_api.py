@@ -1130,19 +1130,128 @@ def productionStatAll():
 @fetch_api.route("/predict/ccus-trap", methods=["POST"])
 def predict_ccus_trap():
     try:
-        project = client.get_default_project()
-        input_data = request.get_json()
+        # Read JSON data from client
+        client_data = request.get_json()
 
-        # Get the model
-        model = project.get_saved_model('3qgVTU8C')
+        # Validate required parameters
+        required_params = ['type', 'latitude', 'region', 'formation', 'unit_designation', 'rocktype']
+        for param in required_params:
+            if param not in client_data:
+                return jsonify({
+                    "success": False,
+                    "error": f"Missing required parameter: {param}"
+                }), 400
 
-        # Prepare prediction
-        prediction_flowtask = model.get_prediction_flowtask()
-        prediction = prediction_flowtask.predict_raw(input_data)
+        model = loader.load_model('./models/ccstrap.zip')
+
+        # Template data
+        template_input = {
+            "country": "Indonesia",
+            "permeability_md": "159",
+            "type": "Saline",
+            "area": "Northern Territory: Offshore",
+            "project_spec": False,
+            "basin": "Bonaparte",
+            "region": "Oceania",
+            "rocktype": "Clastic",
+            "unit_designation": "Saline Aquifer",
+            "pre_injection_pressure": "0",
+            "flowtest": False,
+            "frac_pressure": "0",
+            "formation": "Sandpiper Sandstone Formation",
+            "source_of_storage_efficiency_factor": "Bradshaw et al 2009. Data from static and dynamic models used to constrain inputs (variability evaluated using Monte Carlo model to address uncertainties). Probabilistic effective storage estimate.",
+            "pore_compressibility": "0",
+            "brine_salinity": "0",
+            "depth": "2200",
+            "age": "Lower Cretaceous",
+            "pressure_psig": 0.0,
+            "longitude": 129.74277777777777,
+            "co2_density": 0.0,
+            "well_density": 0.00425,
+            "thickness_m": 168.5,
+            "site_area_km2": 8000.0,
+            "latitude": -13.227500000000001,
+            "single_well_discovery_area": 200,
+            "well_count": 34,
+            "ntg": 0.97,
+            "porosity": 19.7,
+            "storage_unit_type": None,
+            "code": None,
+            "site_name": None,
+            "discovery_status": None,
+            "publication": None,
+            "project_history": None,
+            "development_plan": None,
+            "containment_summary": None,
+            "assessment_notes": None,
+            "year_of_publication": None,
+            "date_of_assessment": None,
+            "source_of_analogue": None,
+            "assessment": None,
+            "stored_low": None,
+            "stored_mid": None,
+            "stored_high": None,
+            "on_injection_low": None,
+            "on_injection_mid": None,
+            "on_injection_high": None,
+            "approved_for_development_low": None,
+            "approved_for_development_mid": None,
+            "approved_for_development_high": None,
+            "justified_for_development_low": None,
+            "justified_for_development_mid": None,
+            "justified_for_development_high": None,
+            "development_pending_low": None,
+            "development_pending_mid": None,
+            "development_pending_high": None,
+            "development_on_hold_low": None,
+            "development_on_hold_mid": None,
+            "development_on_hold_high": None,
+            "development_not_viable_low": None,
+            "development_not_viable_mid": None,
+            "development_not_viable_high": None,
+            "development_unclarified_low": None,
+            "development_unclarified_mid": None,
+            "development_unclarified_high": None,
+            "inaccessible_subcommercial_low": None,
+            "inaccessible_subcommercial_mid": None,
+            "inaccessible_subcommercial_high": None,
+            "prospect_low": None,
+            "prospect_mid": None,
+            "prospect_high": None,
+            "lead_low": None,
+            "lead_mid": None,
+            "lead_high": None,
+            "sequence_play_low": None,
+            "sequence_play_mid": None,
+            "sequence_play_high": None,
+            "basin_play_low": None,
+            "basin_play_mid": None,
+            "basin_play_high": None,
+            "undiscovered_inaccessible_low": None,
+            "undiscovered_inaccessible_mid": None,
+            "undiscovered_inaccessible_high": None,
+            "total_low": None,
+            "total_mid": None,
+            "total_high": None,
+            "sum_low": None,
+            "sum_mid": None,
+            "sum_high": None,
+            "p50_pore_volume_mmcum": None,
+            "prop_considered_discovered": None,
+            "storage_efficiency": None
+        }
+
+        # Override template_input with client_data if available
+        for key in template_input:
+            if key in client_data:
+                template_input[key] = client_data[key]
+
+        df = pd.DataFrame([template_input])
+        prediction = model.predict(df)
 
         return jsonify({
             "success": True,
-            "prediction": prediction,
+            "prediction": prediction[0],
             "model_info": {
                 "id": "3qgVTU8C",
                 "name": "CCUS Trap Prediction",
@@ -1158,24 +1267,169 @@ def predict_ccus_trap():
             "message": "Failed to predict CCUS trap"
         }), 500
 
+
 @fetch_api.route("/predict/ccus-go-nogo", methods=["POST"])
 def predict_ccus_go_nogo():
     try:
-        project = client.get_default_project()
-        input_data = request.get_json()
+        # Read JSON data from client
+        client_data = request.get_json()
 
-        # Get the model
-        model = project.get_saved_model('UAmBxlg8')
+        # Validate required parameters
+        required_params = ['formation', 'depth', 'site_area_km2', 'frac_pressure', 'country', 'unit_designation']
+        for param in required_params:
+            if param not in client_data:
+                return jsonify({
+                    "success": False,
+                    "error": f"Missing required parameter: {param}"
+                }), 400
 
-        # Prepare prediction
-        prediction_flowtask = model.get_prediction_flowtask()
-        prediction = prediction_flowtask.predict_raw(input_data)
+        # Map formation type
+        formation_map = {
+            "Sandstone": "Sandpiper Sandstone Formation",
+            "Carbonate": "Carbonate Formation"
+        }
+        formation = formation_map.get(client_data['formation'], "Sandpiper Sandstone Formation")
+
+        # Map unit designation
+        unit_designation_map = {
+            "Saline": "Saline Aquifer",
+            "Oil & Gas Fields": "Depleted Oil & Gas Field",
+            "Oilfield": "Depleted Oil & Gas Field"
+        }
+        unit_designation = unit_designation_map.get(client_data['unit_designation'], "Saline Aquifer")
+
+        # Map type based on unit_designation
+        type_map = {
+            "Saline Aquifer": "Saline",
+            "Depleted Oil & Gas Field": "Depleted"
+        }
+        storage_type = type_map.get(unit_designation, "Saline")
+
+        # Get reasonable rocktype based on formation
+        rocktype = "Clastic" if client_data['formation'] == "Sandstone" else "Carbonate"
+
+        # Indonesia-specific reasonable values
+        # Common Indonesian basins: Bonaparte, Java Sea, Kutei, South Sumatra, etc.
+        basin = "Java Sea"  # atau "Bonaparte", "Kutei", "South Sumatra"
+        area = "Java Sea: Offshore"  # sesuaikan dengan basin
+
+        # Indonesia coordinates (Jakarta area as default)
+        latitude = -6.2088  # Jakarta latitude
+        longitude = 106.8456  # Jakarta longitude
+
+        model = loader.load_model('./models/gonogo.zip')
+
+        template_input = {
+            # INPUT FEATURES - Categorical (Dummy encoding)
+            "country": client_data['country'],
+            "permeability_md": "159",  # Reasonable value for Indonesian formations
+            "type": storage_type,
+            "area": area,
+            "project_spec": False,
+            "basin": basin,
+            "region": "Oceania",  # Indonesia is in Oceania region
+            "rocktype": rocktype,
+            "unit_designation": unit_designation,
+            "pre_injection_pressure": "0",
+            "flowtest": False,
+            "frac_pressure": str(client_data['frac_pressure']),  # Convert from bar
+            "formation": formation,
+            "source_of_storage_efficiency_factor": "Regional assessment based on Indonesian geological data",
+            "pore_compressibility": "0",
+            "brine_salinity": "35000",  # Typical salinity for Indonesian offshore (ppm)
+            "depth": str(client_data['depth']),  # Already in ft from client
+            "age": "Miocene",  # Common age for Indonesian oil/gas formations
+
+            # INPUT FEATURES - Numerical (Avg-std rescaling)
+            "pressure_psig": client_data['depth'] * 0.433,  # Hydrostatic pressure estimate (0.433 psi/ft)
+            "longitude": longitude,
+            "co2_density": 0.65,  # Typical CO2 density at Indonesian reservoir conditions
+            "well_density": 0.005,  # Reasonable for Indonesian fields
+            "thickness_m": 100.0,  # Reasonable thickness for Indonesian reservoirs
+            "site_area_km2": client_data['site_area_km2'],
+            "latitude": latitude,
+            "single_well_discovery_area": 150,  # Reasonable for Indonesian fields
+            "well_count": int(client_data['site_area_km2'] * 0.005 * 4),  # Estimate based on well density
+            "ntg": 0.85,  # Net to gross ratio typical for Indonesian clastic reservoirs
+            "porosity": 20.0 if rocktype == "Clastic" else 15.0,  # Typical porosity values
+
+            # TARGET FEATURE
+            "storage_unit_type": None,
+
+            # REJECTED FEATURES - Set to None
+            "code": None,
+            "site_name": None,
+            "discovery_status": None,
+            "publication": None,
+            "project_history": None,
+            "development_plan": None,
+            "containment_summary": None,
+            "assessment_notes": None,
+            "year_of_publication": None,
+            "date_of_assessment": None,
+            "source_of_analogue": None,
+            "assessment": None,
+            "stored_low": None,
+            "stored_mid": None,
+            "stored_high": None,
+            "on_injection_low": None,
+            "on_injection_mid": None,
+            "on_injection_high": None,
+            "approved_for_development_low": None,
+            "approved_for_development_mid": None,
+            "approved_for_development_high": None,
+            "justified_for_development_low": None,
+            "justified_for_development_mid": None,
+            "justified_for_development_high": None,
+            "development_pending_low": None,
+            "development_pending_mid": None,
+            "development_pending_high": None,
+            "development_on_hold_low": None,
+            "development_on_hold_mid": None,
+            "development_on_hold_high": None,
+            "development_not_viable_low": None,
+            "development_not_viable_mid": None,
+            "development_not_viable_high": None,
+            "development_unclarified_low": None,
+            "development_unclarified_mid": None,
+            "development_unclarified_high": None,
+            "inaccessible_subcommercial_low": None,
+            "inaccessible_subcommercial_mid": None,
+            "inaccessible_subcommercial_high": None,
+            "prospect_low": None,
+            "prospect_mid": None,
+            "prospect_high": None,
+            "lead_low": None,
+            "lead_mid": None,
+            "lead_high": None,
+            "sequence_play_low": None,
+            "sequence_play_mid": None,
+            "sequence_play_high": None,
+            "basin_play_low": None,
+            "basin_play_mid": None,
+            "basin_play_high": None,
+            "undiscovered_inaccessible_low": None,
+            "undiscovered_inaccessible_mid": None,
+            "undiscovered_inaccessible_high": None,
+            "total_low": None,
+            "total_mid": None,
+            "total_high": None,
+            "sum_low": None,
+            "sum_mid": None,
+            "sum_high": None,
+            "p50_pore_volume_mmcum": None,
+            "prop_considered_discovered": None,
+            "storage_efficiency": None
+        }
+
+        df = pd.DataFrame([template_input])
+        prediction = model.predict(df)
 
         return jsonify({
             "success": True,
-            "prediction": prediction,
+            "prediction": prediction[0],
             "model_info": {
-                "id": "UAmBxlg8",
+                "id": "3qgVTU8C",
                 "name": "Predict Go/Nogo - CCUS",
                 "type": "PREDICTION"
             }
@@ -1192,380 +1446,71 @@ def predict_ccus_go_nogo():
 @fetch_api.route("/predict/ccus-eor", methods=["POST"])
 def predict_ccus_eor():
     try:
-        project = client.get_default_project()
-        input_data = request.get_json()
+        # Read JSON data from client
+        client_data = request.get_json()
+        # Validate required parameters
+        required_params = ['porosity', 'permeability', 'depth', 'oil_gravity', 'oil_viscosity', 'formation']
+        for param in required_params:
+            if param not in client_data:
+                return jsonify({
+                    "success": False,
+                    "error": f"Missing required parameter: {param}"
+                }), 400
 
-        # Get the model
-        model = project.get_saved_model('Zby5vsSm')
+        model = loader.load_model('./models/ccuseor.zip')
+        if client_data['formation'] == "Sandstone":
+            client_data['formation'] = "S"
+        elif client_data['formation'] == "Carbonate":
+            client_data['formation'] = "C"
 
-        # Prepare prediction
-        prediction_flowtask = model.get_prediction_flowtask()
-        prediction = prediction_flowtask.predict_raw(input_data)
+        template_input = {
+            # 🟦 Categorical - Dummy encoding
+            "operator": "Berry",
+            "Field": "South Midway–Sunset",
+            "State": "Calif.",
+            "County": "Kern",
+            "Start Date": "1964",
+            "Pay zone": "Monarch",
+            "Formation": client_data['formation'],
+            # 🟩 Numerical - Avg-std rescaling
+            "Area, acres": 600,
+            "Total Wells prod.": 1200,
+            "Total Wells Inj.": None,  # Empty → None
+            "Porosity": client_data['porosity'],
+            "Permeabiliy, mD": client_data['permeability'],  # Fixed typo here
+            "Depth, ft": client_data['depth'],
+            "Oil Gravity, API": client_data['oil_gravity'],
+            "Oil Viscosity, cP": client_data['oil_viscosity'],
+            "Temperature, F": 80,
+            "Total Prod, b/d": 10000,
+            "Enhanced Prod. b/d": 7000,
+            # ❌ Rejected columns and non-inputs
+            "EOR Type": None,
+            "col_19": None,
+            "col_20": None,
+            "col_21": None,
+            "col_22": None,
+            "col_23": None,
+            "col_24": None,
+            "col_25": None,
+            "EOR_Type_Declutter": None
+        }
 
+        df = pd.DataFrame([template_input])
+        prediction = model.predict(df)
         return jsonify({
             "success": True,
-            "prediction": prediction,
+            "prediction": prediction[0],
             "model_info": {
                 "id": "Zby5vsSm",
                 "name": "Predict EOR - CCUS Study",
                 "type": "PREDICTION"
             }
         })
-
     except Exception as e:
         print("Error:", e)
         return jsonify({
             "success": False,
             "error": str(e),
             "message": "Failed to predict CCUS EOR"
-        }), 500
-
-@fetch_api.route("/predict/esp-failure", methods=["GET"])
-def predict_esp_failure_endpoint():
-    import pandas as pd
-    import numpy as np
-    from datetime import datetime, timedelta, timezone
-    project = client.get_default_project()
-    try:
-        # --- Validasi Input dari Request ---
-        well_name = request.args.get('well', None)
-        analysis_window_hours = request.args.get('window_hours', 3, type=int)
-        if not well_name:
-            return jsonify({"success": False, "error": "Query parameter 'well' is required."}), 400
-
-        # --- Muat semua model forecasting ---
-        try:
-            # Corrected way to load models using DSSSavedModel API
-            # Temporary dict for building the forecasting models
-            forecasting_models_predictors = {}
-            forecasting_model_map = {
-                'Discharge_Pressure': 'cDrOuPX1',
-                'Frequency': 'NVYSg2z1',
-                'Intake_Pressure': 'Nfu9lHcn',
-                'Intake_Temperature': 'ahE1NbPc',
-                'Motor_Temperature': 'rqKQCT1x',
-                'Vibration': '3uWzFhhA'
-            }
-            for key, model_id in forecasting_model_map.items():
-                saved_model_obj = project.get_saved_model(model_id)
-                active_version_info = saved_model_obj.get_active_version()
-                if active_version_info is None:
-                    # Raise an error if no active version is found, as it's required for prediction.
-                    raise RuntimeError(f"No active version found for model '{key}' (ID: {model_id}). An active version is required for prediction.")
-                version_id = active_version_info['id']
-                # get_version_details returns an object that can be used for prediction
-                # (e.g., DSSTrainedTimeseriesForecastingModelDetails or DSSTrainedPredictionModelDetails)
-                # These objects typically have a .predict() method.
-                forecasting_models_predictors[key] = saved_model_obj.get_version_details(version_id)
-            # Assign to the original variable name used later in the script
-            forecasting_models = forecasting_models_predictors
-
-            # Load the failure classifier
-            classifier_model_id = '8L09CeBw'
-            classifier_saved_model_obj = project.get_saved_model(classifier_model_id)
-            classifier_active_version_info = classifier_saved_model_obj.get_active_version()
-            if classifier_active_version_info is None:
-                raise RuntimeError(f"No active version found for classifier model (ID: {classifier_model_id}). An active version is required for prediction.")
-            classifier_version_id = classifier_active_version_info['id']
-            # This object will also have a .predict() method
-            failure_classifier = classifier_saved_model_obj.get_version_details(classifier_version_id)
-        except Exception as e:  # Catches RuntimeError from above and other exceptions during model loading
-            # Log the error for server-side debugging if desired
-            # print(f"Error during model loading: {str(e)}")
-            return jsonify({"success": False, "error": f"Failed to load models: {str(e)}"}), 503
-
-        # --- Kamus untuk rekomendasi aksi yang sudah diparafrase ---
-        PRESCRIPTIVE_ACTIONS = {
-            "Low PI": {
-                "priority": "High",
-                "primary_action": "Investigate potential inflow restriction.",
-                "steps": [
-                    "Check current fluid level and calculate Bottom Hole Pressure (BHP).",
-                    "Compare current BHP with historical data to confirm productivity decline.",
-                    "If pump design allows, consider adjusting tubing head pressure to match lower inflow."
-                ],
-                "possible_causes": "Scale buildup, paraffin deposition, or reservoir pressure depletion."
-            },
-            "Tubing Leak": {
-                "priority": "Critical",
-                "primary_action": "Confirm integrity of the production tubing immediately.",
-                "steps": [
-                    "Initiate a wellhead pressure test to check for leaks.",
-                    "If pressure test is inconclusive, perform a dead-head test.",
-                    "Prepare for potential well intervention if a leak is confirmed."
-                ],
-                "possible_causes": "Corrosion, connection failure, or mechanical damage."
-            },
-            "Pump Wear": {
-                "priority": "Medium",
-                "primary_action": "Evaluate pump performance degradation.",
-                "steps": [
-                    "Analyze system efficiency trends (e.g., energy consumption per barrel lifted).",
-                    "Review vibration data for sustained increases.",
-                    "Begin planning for a future pump replacement (workover)."
-                ],
-                "possible_causes": "Abrasive wear, corrosion, or operating outside of design range."
-            },
-            "Sand Ingestion": {
-                "priority": "High",
-                "primary_action": "Mitigate solids production to prevent catastrophic pump failure.",
-                "steps": [
-                    "Immediately check surface equipment for sand accumulation.",
-                    "Consider reducing flow rate to minimize solids lifting.",
-                    "Evaluate need for downhole sand control for next workover."
-                ],
-                "possible_causes": "Formation failure, high drawdown, or ineffective sand control."
-            },
-            "Closed Valve (SSSV)": {
-                "priority": "High",
-                "primary_action": "Verify status of downhole and surface safety valves.",
-                "steps": [
-                    "Confirm the intended position of the SSSV and surface valves.",
-                    "If unintentional, contact Field Service Tech for immediate on-site inspection.",
-                    "Do not restart pump until valve status is confirmed."
-                ],
-                "possible_causes": "Accidental closure, control line failure, or safety shutdown."
-            },
-            "Increase in Frequency": {
-                "priority": "Low",
-                "primary_action": "Review recent VSD (Variable Speed Drive) frequency changes.",
-                "steps": [
-                    "Verify if frequency increase was an intentional operational change.",
-                    "Monitor intake pressure closely to avoid pump-off condition.",
-                    "If unintentional, revert to the previous setpoint and monitor."
-                ],
-                "possible_causes": "Manual operator adjustment or automated optimization."
-            },
-            "Normal Operation": {
-                "priority": "Info",
-                "primary_action": "System operating within expected parameters.",
-                "steps": [
-                    "Continue routine monitoring.",
-                    "No immediate intervention required."
-                ],
-                "possible_causes": "N/A"
-            },
-            "default": {
-                "priority": "High",
-                "primary_action": "Unrecognized pattern detected. Manual analysis required.",
-                "steps": [
-                    "Review recent trends of all sensor data.",
-                    "Compare current operations with the daily well plan.",
-                    "Alert senior production engineer for investigation."
-                ],
-                "possible_causes": "Complex failure mode, sensor malfunction, or a new, unlearned pattern."
-            }
-        }
-
-        # --- 1. Fetch & Filter Data ---
-        print(f"PIPELINE START: Fetching data for well: {well_name}")
-        raw_dataset = project.get_dataset('Artlift_Plus_Ops').get_as_core_dataset().get_dataframe()
-
-        df = raw_dataset.copy()
-
-        # Ensure primary_date is in the correct format
-        import pandas as pd
-        df['primary_date'] = pd.to_datetime(df['primary_date'])
-
-        # Filter by well name only and get the most recent data
-        df = df[df['NPD_WELL_BORE_NAME'] == well_name]
-
-        if df.empty:
-            return jsonify({"success": False, "message": f"No data found for well '{well_name}'."}), 404
-
-        # Sort by date and get the most recent data
-        df = df.sort_values(by='primary_date', ascending=False)
-
-        # Calculate how many records we need based on analysis window
-        # Assuming 10-minute intervals: analysis_window_hours * 6 records per hour + buffer
-        buffer_records = (analysis_window_hours + 3) * 6  # Buffer 3 jam untuk kalkulasi rolling
-        max_records_needed = min(buffer_records, len(df))  # Don't exceed available data
-
-        # Take the most recent records
-        df = df.head(max_records_needed)
-
-        # Sort back to chronological order for processing
-        df = df.sort_values(by='primary_date', ascending=True)
-
-        if df.empty:
-            return jsonify({"success": False, "message": f"No sufficient data found for well '{well_name}' for analysis."}), 404
-
-        if df.empty:
-            return jsonify({"success": False, "message": f"No sufficient data found for well '{well_name}' for analysis."}), 404
-
-        df.columns = [c.replace(' ', '_') for c in df.columns]
-        df = df.sort_values(by='primary_date')
-
-        # --- 2. On-the-fly Forecasting ---
-        print("PIPELINE STEP 2: Running on-the-fly forecasting...")
-        # For time series forecasting models, use compute_forecast() instead of predict()
-        for param, forecasting_model in forecasting_models.items():
-            param_clean = param.replace('_', ' ')
-
-            # Prepare the data for forecasting - time series models need specific format
-            forecast_df = df.rename(columns=lambda c: c.replace('_', ' '))
-
-            try:
-                # Use compute_forecast method for time series forecasting models
-                forecast_result = forecasting_model.compute_forecast(forecast_df)
-
-                # Extract forecast values - the structure may vary, so handle different formats
-                if isinstance(forecast_result, dict) and 'forecasts' in forecast_result:
-                    # Format: {'forecasts': [...], 'quantiles': [...]}
-                    forecasts = forecast_result['forecasts']
-                elif isinstance(forecast_result, dict) and 'prediction' in forecast_result:
-                    # Format: {'prediction': [...]}
-                    forecasts = forecast_result['prediction']
-                elif hasattr(forecast_result, 'prediction'):
-                    # Object with prediction attribute
-                    forecasts = forecast_result.prediction
-                else:
-                    # Direct array/list format
-                    forecasts = forecast_result
-
-                # Ensure we have the right number of forecasts
-                if isinstance(forecasts, list) and len(forecasts) >= len(df):
-                    df[f'{param}_predicted'] = forecasts[:len(df)]
-                elif hasattr(forecasts, '__len__') and len(forecasts) >= len(df):
-                    df[f'{param}_predicted'] = forecasts[:len(df)]
-                else:
-                    # If forecast length doesn't match, use the last available value
-                    last_forecast = forecasts[-1] if isinstance(forecasts, (list, tuple)) else forecasts
-                    df[f'{param}_predicted'] = last_forecast
-
-                # Calculate residuals
-                df[f'{param}_residual'] = df[param.replace(' ', '_')] - df[f'{param}_predicted']
-
-            except Exception as forecast_error:
-                print(f"Warning: Could not forecast for {param}: {str(forecast_error)}")
-                # Fallback: use the last observed value as prediction
-                df[f'{param}_predicted'] = df[param.replace(' ', '_')].fillna(method='ffill')
-                df[f'{param}_residual'] = 0  # No residual if we can't forecast
-
-        # --- 3. On-the-fly Feature Engineering & Trend Categorization ---
-        print("PIPELINE STEP 3: Running feature engineering...")
-        WINDOW_PERIODS = int(analysis_window_hours * 6)  # Asumsi 10 menit interval
-        SLOPE_THRESHOLD = 0.01
-        cols_to_engineer = ['Discharge_Pressure', 'Frequency', 'Intake_Pressure', 'Intake_Temperature', 'Motor_Temperature', 'Vibration', 'OIL_RATE_numeric']
-
-        for col in cols_to_engineer:
-            # Check if column exists in dataframe
-            if col in df.columns:
-                df[f'{col}_slope'] = df[col].diff()
-                df[f'{col}_trend'] = np.select([df[f'{col}_slope'] > SLOPE_THRESHOLD, df[f'{col}_slope'] < -SLOPE_THRESHOLD], ['Increase', 'Decrease'], default='Constant')
-
-                # Only calculate residual stats if residual column exists (from forecasting step)
-                if f'{col}_residual' in df.columns:
-                    rolling_window = df[f'{col}_residual'].rolling(window=WINDOW_PERIODS, min_periods=1)
-                    df[f'{col}_residual_avg'] = rolling_window.mean()
-                    df[f'{col}_residual_std'] = rolling_window.std()
-                else:
-                    # Create placeholder columns if forecasting failed
-                    df[f'{col}_residual_avg'] = 0
-                    df[f'{col}_residual_std'] = 0
-            else:
-                print(f"Warning: Column {col} not found in dataframe")
-                # Create placeholder trend column
-                df[f'{col}_trend'] = 'Constant'
-
-        df['Ampere_trend'] = 'Constant'  # Placeholder
-
-        # Use pandas fillna with method parameter (newer syntax)
-        df = df.fillna(method='ffill').fillna(method='bfill')
-
-        if df.empty:
-            return jsonify({"success": False, "message": "Dataframe became empty after feature engineering."}), 500
-
-        # --- 4. Final Classification ---
-        print("PIPELINE STEP 4: Making final failure classification...")
-        latest_data_point = df.tail(1)
-        # Ganti nama kolom kembali ke format asli jika model dilatih dengan spasi
-        latest_data_point_renamed = latest_data_point.rename(columns=lambda c: c.replace('_', ' '))
-
-        try:
-            # Try predict method first (for regular prediction models)
-            prediction_result = failure_classifier.predict(latest_data_point_renamed)
-            final_prediction = prediction_result['prediction'][0]
-            prediction_proba = prediction_result['probas'][final_prediction][0]
-        except AttributeError:
-            try:
-                # If predict doesn't work, try compute_prediction (for some model types)
-                prediction_result = failure_classifier.predict(latest_data_point_renamed)
-                final_prediction = prediction_result['prediction'][0]
-                prediction_proba = prediction_result['probas'][final_prediction][0]
-            except Exception as classifier_error:
-                print(f"Error with classifier prediction: {str(classifier_error)}")
-                # Fallback to default prediction
-                final_prediction = "default"
-                prediction_proba = 0.5
-
-        # --- 5. Get Action & Format Response ---
-        print(f"PIPELINE END. Result: {final_prediction}")
-        action_details = PRESCRIPTIVE_ACTIONS.get(final_prediction, PRESCRIPTIVE_ACTIONS["default"])
-
-        # Safely extract contributing factors with fallbacks
-        contributing_factors = {}
-        factor_columns = [
-            ('Intake_Pressure_Trend', 'Intake_Pressure_trend'),
-            ('Discharge_Pressure_Trend', 'Discharge_Pressure_trend'),
-            ('Vibration_Trend', 'Vibration_trend'),
-            ('Oil_Rate_Trend', 'OIL_RATE_numeric_trend')
-        ]
-
-        for display_name, col_name in factor_columns:
-            if col_name in latest_data_point.columns:
-                contributing_factors[display_name] = latest_data_point[col_name].iloc[0]
-            else:
-                contributing_factors[display_name] = 'Unknown'
-
-        return jsonify({
-            "success": True,
-            "well_name": well_name,
-            "prediction_timestamp_utc": datetime.now(timezone.utc).isoformat(),
-            "prediction_details": {
-                "failure_mode": final_prediction,
-                "confidence": round(float(prediction_proba), 4),
-                "priority": action_details.get("priority", "Unknown")
-            },
-            "recommended_action": {
-                "summary": action_details.get("primary_action", "No action defined."),
-                "detailed_steps": action_details.get("steps", []),
-                "possible_causes": action_details.get("possible_causes", "N/A")
-            },
-            "contributing_factors": contributing_factors
-        })
-    except Exception as e:
-        print(f"FATAL ERROR in endpoint: {str(e)}")
-        # Adding traceback for more detailed server-side logging
-        import traceback
-        print(traceback.format_exc())
-        return jsonify({
-            "success": False,
-            "error": "An unexpected server error occurred.",
-            "details": str(e)
-        }), 500
-
-@fetch_api.route("/model",methods=["GET"])
-def model():
-    project = client.get_default_project()
-    try:
-      model = project.get_saved_model('UAmBxlg8')
-      active_version_id = model.get_active_version().get('id')
-      version_details = model.get_version_details(active_version_id)
-      version_details.get_scoring_python("./model.zip")
-      version_details.get_scoring_mlflow("./modelflow.zip")
-      # testing load
-      model = loader.load_model(export_path="./model.zip")
-      model2 = loader.load_model(export_path="./modelflow.zip")
-      print(model2.describe())
-      return jsonify({
-          "succes": True,
-          "version" : active_version_id
-      })
-    except Exception as e:
-        print("Error:", e)
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "message": "Failed to predict CCUS Go/Nogo"
         }), 500
