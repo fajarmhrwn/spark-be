@@ -1549,6 +1549,77 @@ def predict_ccus_go_nogo():
             "message": "Gagal melakukan prediksi DCA. Pastikan format input data sudah benar dan semua fitur yang dibutuhkan tersedia."
         }), 500
 
+@fetch_api.route("/predict/ccus-eor", methods=["POST"])
+def predict_ccus_eor():
+    try:
+        # Read JSON data from client
+        client_data = request.get_json()
+        # Validate required parameters
+        required_params = ['porosity', 'permeability', 'depth', 'oil_gravity', 'oil_viscosity', 'formation']
+        for param in required_params:
+            if param not in client_data:
+                return jsonify({
+                    "success": False,
+                    "error": f"Missing required parameter: {param}"
+                }), 400
+
+        model = loader.load_model('./models/ccuseor.zip')
+        if client_data['formation'] == "Sandstone":
+            client_data['formation'] = "S"
+        elif client_data['formation'] == "Carbonate":
+            client_data['formation'] = "C"
+
+        template_input = {
+            # 🟦 Categorical - Dummy encoding
+            "operator": "Berry",
+            "Field": "South Midway–Sunset",
+            "State": "Calif.",
+            "County": "Kern",
+            "Start Date": "1964",
+            "Pay zone": "Monarch",
+            "Formation": client_data['formation'],
+            # 🟩 Numerical - Avg-std rescaling
+            "Area, acres": 600,
+            "Total Wells prod.": 1200,
+            "Total Wells Inj.": None,  # Empty → None
+            "Porosity": client_data['porosity'],
+            "Permeabiliy, mD": client_data['permeability'],  # Fixed typo here
+            "Depth, ft": client_data['depth'],
+            "Oil Gravity, API": client_data['oil_gravity'],
+            "Oil Viscosity, cP": client_data['oil_viscosity'],
+            "Temperature, F": 80,
+            "Total Prod, b/d": 10000,
+            "Enhanced Prod. b/d": 7000,
+            # ❌ Rejected columns and non-inputs
+            "EOR Type": None,
+            "col_19": None,
+            "col_20": None,
+            "col_21": None,
+            "col_22": None,
+            "col_23": None,
+            "col_24": None,
+            "col_25": None,
+            "EOR_Type_Declutter": None
+        }
+
+        df = pd.DataFrame([template_input])
+        prediction = model.predict(df)
+        return jsonify({
+            "success": True,
+            "prediction": prediction[0],
+            "model_info": {
+                "id": "Zby5vsSm",
+                "name": "Predict EOR - CCUS Study",
+                "type": "PREDICTION"
+            }
+        })
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Failed to predict CCUS EOR"
+        }), 500
 
 @fetch_api.route("/predict/esp-failure", methods=["GET"])
 def predict_esp_failure_endpoint():
