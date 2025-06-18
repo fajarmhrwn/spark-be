@@ -1267,13 +1267,15 @@ def predict_ccus_trap():
             "message": "Failed to predict CCUS trap"
         }), 500
 
-@fetch_api.route("/predict/ccus-eor", methods=["POST"])
-def predict_ccus_eor():
+
+@fetch_api.route("/predict/ccus-go-nogo", methods=["POST"])
+def predict_ccus_go_nogo():
     try:
         # Read JSON data from client
         client_data = request.get_json()
+
         # Validate required parameters
-        required_params = ['porosity', 'permeability', 'depth', 'oil_gravity', 'oil_viscosity', 'formation']
+        required_params = ['formation', 'depth', 'site_area_km2', 'frac_pressure', 'country', 'unit_designation']
         for param in required_params:
             if param not in client_data:
                 return jsonify({
@@ -1281,212 +1283,271 @@ def predict_ccus_eor():
                     "error": f"Missing required parameter: {param}"
                 }), 400
 
-        model = loader.load_model('./models/ccuseor.zip')
-        if client_data['formation'] == "Sandstone":
-            client_data['formation'] = "S"
-        elif client_data['formation'] == "Carbonate":
-            client_data['formation'] = "C"
+        # Map formation type
+        formation_map = {
+            "Sandstone": "Sandpiper Sandstone Formation",
+            "Carbonate": "Carbonate Formation"
+        }
+        formation = formation_map.get(client_data['formation'], "Sandpiper Sandstone Formation")
+
+        # Map unit designation
+        unit_designation_map = {
+            "Saline": "Saline Aquifer",
+            "Oil & Gas Fields": "Depleted Oil & Gas Field",
+            "Oilfield": "Depleted Oil & Gas Field"
+        }
+        unit_designation = unit_designation_map.get(client_data['unit_designation'], "Saline Aquifer")
+
+        # Map type based on unit_designation
+        type_map = {
+            "Saline Aquifer": "Saline",
+            "Depleted Oil & Gas Field": "Depleted"
+        }
+        storage_type = type_map.get(unit_designation, "Saline")
+
+        # Get reasonable rocktype based on formation
+        rocktype = "Clastic" if client_data['formation'] == "Sandstone" else "Carbonate"
+
+        # Indonesia-specific reasonable values
+        # Common Indonesian basins: Bonaparte, Java Sea, Kutei, South Sumatra, etc.
+        basin = "Java Sea"  # atau "Bonaparte", "Kutei", "South Sumatra"
+        area = "Java Sea: Offshore"  # sesuaikan dengan basin
+
+        # Indonesia coordinates (Jakarta area as default)
+        latitude = -6.2088  # Jakarta latitude
+        longitude = 106.8456  # Jakarta longitude
+
+        model = loader.load_model('./models/gonogo.zip')
 
         template_input = {
-            # 🟦 Categorical - Dummy encoding
-            "operator": "Berry",
-            "Field": "South Midway–Sunset",
-            "State": "Calif.",
-            "County": "Kern",
-            "Start Date": "1964",
-            "Pay zone": "Monarch",
-            "Formation": client_data['formation'],
-            # 🟩 Numerical - Avg-std rescaling
-            "Area, acres": 600,
-            "Total Wells prod.": 1200,
-            "Total Wells Inj.": None,  # Empty → None
-            "Porosity": client_data['porosity'],
-            "Permeabiliy, mD": client_data['permeability'],  # Fixed typo here
-            "Depth, ft": client_data['depth'],
-            "Oil Gravity, API": client_data['oil_gravity'],
-            "Oil Viscosity, cP": client_data['oil_viscosity'],
-            "Temperature, F": 80,
-            "Total Prod, b/d": 10000,
-            "Enhanced Prod. b/d": 7000,
-            # ❌ Rejected columns and non-inputs
-            "EOR Type": None,
-            "col_19": None,
-            "col_20": None,
-            "col_21": None,
-            "col_22": None,
-            "col_23": None,
-            "col_24": None,
-            "col_25": None,
-            "EOR_Type_Declutter": None
+            # INPUT FEATURES - Categorical (Dummy encoding)
+            "country": client_data['country'],
+            "permeability_md": "159",  # Reasonable value for Indonesian formations
+            "type": storage_type,
+            "area": area,
+            "project_spec": False,
+            "basin": basin,
+            "region": "Oceania",  # Indonesia is in Oceania region
+            "rocktype": rocktype,
+            "unit_designation": unit_designation,
+            "pre_injection_pressure": "0",
+            "flowtest": False,
+            "frac_pressure": str(client_data['frac_pressure']),  # Convert from bar
+            "formation": formation,
+            "source_of_storage_efficiency_factor": "Regional assessment based on Indonesian geological data",
+            "pore_compressibility": "0",
+            "brine_salinity": "35000",  # Typical salinity for Indonesian offshore (ppm)
+            "depth": str(client_data['depth']),  # Already in ft from client
+            "age": "Miocene",  # Common age for Indonesian oil/gas formations
+
+            # INPUT FEATURES - Numerical (Avg-std rescaling)
+            "pressure_psig": client_data['depth'] * 0.433,  # Hydrostatic pressure estimate (0.433 psi/ft)
+            "longitude": longitude,
+            "co2_density": 0.65,  # Typical CO2 density at Indonesian reservoir conditions
+            "well_density": 0.005,  # Reasonable for Indonesian fields
+            "thickness_m": 100.0,  # Reasonable thickness for Indonesian reservoirs
+            "site_area_km2": client_data['site_area_km2'],
+            "latitude": latitude,
+            "single_well_discovery_area": 150,  # Reasonable for Indonesian fields
+            "well_count": int(client_data['site_area_km2'] * 0.005 * 4),  # Estimate based on well density
+            "ntg": 0.85,  # Net to gross ratio typical for Indonesian clastic reservoirs
+            "porosity": 20.0 if rocktype == "Clastic" else 15.0,  # Typical porosity values
+
+            # TARGET FEATURE
+            "storage_unit_type": None,
+
+            # REJECTED FEATURES - Set to None
+            "code": None,
+            "site_name": None,
+            "discovery_status": None,
+            "publication": None,
+            "project_history": None,
+            "development_plan": None,
+            "containment_summary": None,
+            "assessment_notes": None,
+            "year_of_publication": None,
+            "date_of_assessment": None,
+            "source_of_analogue": None,
+            "assessment": None,
+            "stored_low": None,
+            "stored_mid": None,
+            "stored_high": None,
+            "on_injection_low": None,
+            "on_injection_mid": None,
+            "on_injection_high": None,
+            "approved_for_development_low": None,
+            "approved_for_development_mid": None,
+            "approved_for_development_high": None,
+            "justified_for_development_low": None,
+            "justified_for_development_mid": None,
+            "justified_for_development_high": None,
+            "development_pending_low": None,
+            "development_pending_mid": None,
+            "development_pending_high": None,
+            "development_on_hold_low": None,
+            "development_on_hold_mid": None,
+            "development_on_hold_high": None,
+            "development_not_viable_low": None,
+            "development_not_viable_mid": None,
+            "development_not_viable_high": None,
+            "development_unclarified_low": None,
+            "development_unclarified_mid": None,
+            "development_unclarified_high": None,
+            "inaccessible_subcommercial_low": None,
+            "inaccessible_subcommercial_mid": None,
+            "inaccessible_subcommercial_high": None,
+            "prospect_low": None,
+            "prospect_mid": None,
+            "prospect_high": None,
+            "lead_low": None,
+            "lead_mid": None,
+            "lead_high": None,
+            "sequence_play_low": None,
+            "sequence_play_mid": None,
+            "sequence_play_high": None,
+            "basin_play_low": None,
+            "basin_play_mid": None,
+            "basin_play_high": None,
+            "undiscovered_inaccessible_low": None,
+            "undiscovered_inaccessible_mid": None,
+            "undiscovered_inaccessible_high": None,
+            "total_low": None,
+            "total_mid": None,
+            "total_high": None,
+            "sum_low": None,
+            "sum_mid": None,
+            "sum_high": None,
+            "p50_pore_volume_mmcum": None,
+            "prop_considered_discovered": None,
+            "storage_efficiency": None
         }
 
         df = pd.DataFrame([template_input])
         prediction = model.predict(df)
+
         return jsonify({
             "success": True,
             "prediction": prediction[0],
             "model_info": {
-                "id": "Zby5vsSm",
-                "name": "Predict EOR - CCUS Study",
+                "id": "3qgVTU8C",
+                "name": "Predict Go/Nogo - CCUS",
                 "type": "PREDICTION"
             }
         })
+
     except Exception as e:
         print("Error:", e)
         return jsonify({
             "success": False,
             "error": str(e),
-            "message": "Failed to predict CCUS EOR"
+            "message": "Failed to predict CCUS Go/Nogo"
         }), 500
 
-# @fetch_api.route("/model",methods=["GET"])
-# def model():
-#     project = client.get_default_project()
-#     try:
-#       model = project.get_saved_model('UAmBxlg8')
-#       active_version_id = model.get_active_version().get('id')
-#       version_details = model.get_version_details(active_version_id)
-#       version_details.get_scoring_python("./model.zip")
-#       version_details.get_scoring_mlflow("./modelflow.zip")
-#       # testing load
-#       model = loader.load_model(export_path="./model.zip")
-#       model2 = loader.load_model(export_path="./modelflow.zip")
-#       print(model2.describe())
-#       return jsonify({
-#           "succes": True,
-#           "version" : active_version_id
-#       })
-#     except Exception as e:
-#         print("Error:", e)
-#         return jsonify({
-#             "success": False,
-#             "error": str(e),
-#             "message": "Failed to predict CCUS Go/Nogo"
-#         }), 500
 
-# @fetch_api.route("/predict/ccus-go-nogo",methods=["POST"])
-# def predict_ccus_go_nogo():
-#     # Pastikan model sudah ter-load
-#     project = client.get_default_project()
-#     try:
-#         # 1. Ambil data JSON dari request
-#         input_data = request.get_json()
-#         if not input_data:
-#             return jsonify({"success": False, "error": "Invalid input", "message": "Request body harus berisi JSON."}), 400
-#         model = project.get_saved_model('UAmBxlg8')
-#         active_version_id = model.get_active_version().get('id')
-#         version_details = model.get_version_details(active_version_id)
-#         version_details.get_scoring_python("./model.zip")
-#         # testing load
-#         model = loader.load_model(export_path="./model.zip")
-#         # 2. Konversi JSON ke Pandas DataFrame
-#         # Model scikit-learn (di balik ForestClassifier) mengharapkan DataFrame
-#         input_df = pd.DataFrame([input_data])
+    project = client.get_default_project()
+    try:
+        # 1. Ambil data JSON dari request
+        input_data = request.get_json()
+        if not input_data:
+            return jsonify({
+                "success": False,
+                "error": "Invalid input",
+                "message": "Request body harus berisi JSON."
+            }), 400
 
-#         # 3. Lakukan prediksi menggunakan model yang sudah di-load
-#         # Dapatkan probabilitas untuk setiap kelas (false, true)
-#         predict_result = model.predict(input_df)
-#         print(" \nOutput of model.predict():\n")
-#         print(predict_result)
+        # 2. Load semua 3 model untuk DCA parameters
+        model_qi_obj = project.get_saved_model('obNojUbY')  # DCA_QI
+        model_di_obj = project.get_saved_model('IjlqFq4w')  # DCA_DI
+        model_b_obj = project.get_saved_model('mh8CKwbK')   # DCA_B
 
-#         # In case of classification the following will output a dictionnary of numpy array with
-#         # probabilities for each class
-#         predict_proba_result = model.predict_proba(input_df)
-#         print(" \nOutput of model.predict_proba():\n")
-#         print(predict_proba_result)
+        # 3. Download dan load model untuk mendapatkan feature requirements
+        # Get active version untuk model pertama (asumsi semua model punya feature yang sama)
+        active_version_id = model_qi_obj.get_active_version().get('id')
+        version_details = model_qi_obj.get_version_details(active_version_id)
+        version_details.get_scoring_python("./model_qi.zip")
 
-        
-#         # 4. Terapkan threshold manual untuk menentukan hasil akhir
-#         threshold = 0.275
-#         prediction_result = "true" if predict_proba_result >= threshold else "false"
+        # Load model QI untuk mendapatkan feature names
+        model_qi = loader.load_model(export_path="./model_qi.zip")
 
-#         # 5. Siapkan response dalam format JSON
-#         return jsonify({
-#             "success": True,
-#             "prediction": prediction_result,
-#             "probabilities": {
-#                 "false": float(prediction_result),
-#                 "true": float(prediction_result)
-#             },
-#             "threshold_used": threshold,
-#             "model_info": "ForestClassifier(n_trees=100)"
-#         })
+        # Dapatkan semua feature names yang dibutuhkan
+        raw_details = version_details.get_raw()
+        all_feature_names = list(raw_details['preprocessing']['per_feature'].keys())
+        print(f"All features needed: {all_feature_names}")
 
-#     except Exception as e:
-#         print(f"Error pada saat prediksi: {e}")
-#         return jsonify({
-#             "success": False,
-#             "error": str(e),
-#             "message": "Gagal melakukan prediksi. Pastikan format input data sudah benar."
-#         }), 500
+        # Download model lainnya
+        active_version_di = model_di_obj.get_active_version().get('id')
+        version_details_di = model_di_obj.get_version_details(active_version_di)
+        version_details_di.get_scoring_python("./model_di.zip")
+        model_di = loader.load_model(export_path="./model_di.zip")
 
-# @fetch_api.route("/predict/ccus-go-nogo", methods=["POST"])
-# def predict_ccus_go_nogo():
-#     project = client.get_default_project()
-#     try:
-#         # 1. Ambil data JSON dari request
-#         input_data = request.get_json()
-#         if not input_data:
-#             return jsonify({"success": False, "error": "Invalid input", "message": "Request body harus berisi JSON."}), 400
+        active_version_b = model_b_obj.get_active_version().get('id')
+        version_details_b = model_b_obj.get_version_details(active_version_b)
+        version_details_b.get_scoring_python("./model_b.zip")
+        model_b = loader.load_model(export_path="./model_b.zip")
 
-#         model = project.get_saved_model('UAmBxlg8')
+        # 4. Konversi JSON ke Pandas DataFrame dengan semua kolom yang dibutuhkan
+        input_df = pd.DataFrame(columns=all_feature_names, index=[0])
+        input_df.update(pd.Series(input_data))
 
-#         # === PERBAIKAN FINAL DI SINI ===
-#         # A. Dapatkan daftar semua fitur yang dibutuhkan oleh model.
-#         active_version_id = model.get_active_version().get('id')
-#         version_details = model.get_version_details(active_version_id)
-#         version_details.get_scoring_python("./model.zip")
-#         # testing load
-#         model = loader.load_model(export_path="./model.zip")
-        
-#         # Gunakan .get_raw() untuk mengubah objek detail menjadi dictionary
-#         raw_details = version_details.get_raw()
-#         print(raw_details)
-        
-#         # Sekarang Anda bisa mengaksesnya sebagai dictionary
-#         all_feature_names = list(raw_details['preprocessing']['per_feature'].keys())
-        
-#         # B. Konversi JSON ke Pandas DataFrame dengan semua kolom yang dibutuhkan
-#         input_df = pd.DataFrame(columns=all_feature_names, index=[0])
-#         input_df.update(pd.Series(input_data))
+        # 5. Lakukan prediksi untuk ketiga parameter DCA
+        # Prediksi QI (Initial Production Rate)
+        qi_result = model_qi.predict(input_df)
+        qi_prediction = qi_result['prediction'][0] if 'prediction' in qi_result else qi_result[0]
 
-#         # C. Lakukan prediksi untuk mendapatkan probabilitas
-#         predict_proba_result = model.predict_proba(input_df)
-#         print(" \nOutput dari model.:predict_proba()\n")
-#         print(predict_proba_result)
+        # Prediksi DI (Initial Decline Rate)
+        di_result = model_di.predict(input_df)
+        di_prediction = di_result['prediction'][0] if 'prediction' in di_result else di_result[0]
 
-#         # D. Terapkan threshold manual
-#         threshold = 0.275
-#         prob_true = predict_proba_result['true'][0]
-#         prob_false = predict_proba_result['false'][0]
-#         prediction_result = "true" if prob_true >= threshold else "false"
+        # Prediksi B (Decline Exponent)
+        b_result = model_b.predict(input_df)
+        b_prediction = b_result['prediction'][0] if 'prediction' in b_result else b_result[0]
 
-#         # E. Siapkan response dalam format JSON
-#         return jsonify({
-#             "success": True,
-#             "prediction": prediction_result,
-#             "probabilities": {
-#                 "false": float(prob_false),
-#                 "true": float(prob_true)
-#             },
-#             "threshold_used": threshold,
-#             "model_info": "ForestClassifier(n_trees=100)"
-#         })
+        print(f"\nPrediction Results:")
+        print(f"QI (Initial Rate): {qi_prediction}")
+        print(f"DI (Decline Rate): {di_prediction}")
+        print(f"B (Decline Exponent): {b_prediction}")
 
-#     except KeyError as e:
-#         print(f"Error pada saat prediksi: Kunci tidak ditemukan. Error: {e}")
-#         return jsonify({
-#             "success": False,
-#             "error": f"Key not found: {e}. Check model details or prediction output.",
-#             "message": "Gagal memproses prediksi. Kunci yang dibutuhkan tidak ditemukan."
-#         }), 500
-#     except Exception as e:
-#         print(f"Error pada saat prediksi: {e}")
-#         return jsonify({
-#             "success": False,
-#             "error": str(e),
-#             "message": "Gagal melakukan prediksi. Pastikan format input data sudah benar."
-#         }), 500
+        # 6. Siapkan response dalam format JSON
+        return jsonify({
+            "success": True,
+            "predictions": {
+                "qi": float(qi_prediction),  # Initial Production Rate
+                "di": float(di_prediction),  # Initial Decline Rate
+                "b": float(b_prediction)     # Decline Exponent
+            },
+            "model_info": {
+                "qi_model": "DCA_QI Predictor",
+                "di_model": "DCA_DI Predictor",
+                "b_model": "DCA_B Predictor"
+            },
+            "features_used": len(all_feature_names),
+            "required_features": [
+                'AVG_ANNULUS_PRESS', 'AVG_CHOKE_SIZE_P', 'AVG_DOWNHOLE_PRESSURE',
+                'AVG_DOWNHOLE_TEMPERATURE', 'AVG_DP_TUBING', 'AVG_WHP_P', 'AVG_WHT_P',
+                'CUM_OIL_VOL_WELL', 'DP_CHOKE_SIZE', 'SYN_GOR_SCF_STB',
+                'SYN_OIL_DENSITY_API', 'SYN_OIL_FVF_PROXY_RB_STB', 'SYN_PERFORATION_EFFICIENCY',
+                'SYN_RESERVOIR_PRESSURE_PROXY_PSIA', 'SYN_SEG_AVG_INITIAL_SW',
+                'SYN_SEG_AVG_PERM_MD', 'SYN_SEG_AVG_POROSITY', 'SYN_SEG_EFFECTIVE_KH_PROXY_MD_FT',
+                'SYN_SEG_MOBILITY_PROXY', 'SYN_SEG_NET_PAY_FT', 'SYN_SEG_OOIP_PROXY_MMSTB',
+                'SYN_SEG_RE_FT', 'SYN_SKIN_FACTOR', 'SYN_WATER_INJECTION_SUPPORT_FACTOR'
+            ]
+        })
+
+    except KeyError as e:
+        print(f"Error pada saat prediksi: Kunci tidak ditemukan. Error: {e}")
+        return jsonify({
+            "success": False,
+            "error": f"Key not found: {e}. Check model details or prediction output.",
+            "message": "Gagal memproses prediksi. Kunci yang dibutuhkan tidak ditemukan."
+        }), 500
+
+    except Exception as e:
+        print(f"Error pada saat prediksi: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Gagal melakukan prediksi DCA. Pastikan format input data sudah benar dan semua fitur yang dibutuhkan tersedia."
+        }), 500
 
 
 @fetch_api.route("/predict/esp-failure", methods=["GET"])
@@ -1504,10 +1565,10 @@ def predict_esp_failure_endpoint():
         project_vars = project.get_variables()
         project_vars['standard']['api_well_name'] = well_name
         project.set_variables(project_vars)
-        
+
         # 3. Jalankan Scenario
         # GANTI DENGAN ID SKENARIO ANDA
-        scenario = project.get_scenario('API_Prediction_Results') 
+        scenario = project.get_scenario('API_Prediction_Results')
         run = scenario.run_and_wait() # run_and_wait() lebih simpel dari run() + wait_for_completion()
 
         # Cek apakah skenario berhasil
@@ -1518,24 +1579,125 @@ def predict_esp_failure_endpoint():
         print("Skenario berhasil. Mengambil hasil...")
 
         # 4. Ambil hasil dari dataset output
+
         results_dataset = project.get_dataset("API_Prediction_Results")
-        results_df = results_dataset.get_dataframe()
-        
+        results_df = results_dataset.get_as_core_dataset().get_dataframe()
+
         well_result = results_df[results_df['well_name'] == well_name]
         if well_result.empty:
             raise Exception("Skenario berhasil, tapi tidak ada hasil ditemukan untuk sumur ini.")
-        
+
         latest_result = well_result.sort_values(by='prediction_timestamp_utc', ascending=False).iloc[0]
 
-        # 5. Format dan kirim response JSON
-        # (Anda bisa menambahkan logika kamus PRESCRIPTIVE_ACTIONS di sini)
+        PRESCRIPTIVE_ACTIONS = {
+            "Low PI": {
+                "priority": "High",
+                "primary_action": "Investigate potential inflow restriction.",
+                "steps": [
+                    "Check current fluid level and calculate Bottom Hole Pressure (BHP).",
+                    "Compare current BHP with historical data to confirm productivity decline.",
+                    "If pump design allows, consider adjusting tubing head pressure to match lower inflow."
+                ],
+                "possible_causes": "Scale buildup, paraffin deposition, or reservoir pressure depletion."
+            },
+            "Tubing Leak": {
+                "priority": "Critical",
+                "primary_action": "Confirm integrity of the production tubing immediately.",
+                "steps": [
+                    "Initiate a wellhead pressure test to check for leaks.",
+                    "If pressure test is inconclusive, perform a dead-head test.",
+                    "Prepare for potential well intervention if a leak is confirmed."
+                ],
+                "possible_causes": "Corrosion, connection failure, or mechanical damage."
+            },
+            "Pump Wear": {
+                "priority": "Medium",
+                "primary_action": "Evaluate pump performance degradation.",
+                "steps": [
+                    "Analyze system efficiency trends (e.g., energy consumption per barrel lifted).",
+                    "Review vibration data for sustained increases.",
+                    "Begin planning for a future pump replacement (workover)."
+                ],
+                "possible_causes": "Abrasive wear, corrosion, or operating outside of design range."
+            },
+            "Sand Ingestion": {
+                "priority": "High",
+                "primary_action": "Mitigate solids production to prevent catastrophic pump failure.",
+                "steps": [
+                    "Immediately check surface equipment for sand accumulation.",
+                    "Consider reducing flow rate to minimize solids lifting.",
+                    "Evaluate need for downhole sand control for next workover."
+                ],
+                "possible_causes": "Formation failure, high drawdown, or ineffective sand control."
+            },
+            "Closed Valve (SSSV)": {
+                "priority": "High",
+                "primary_action": "Verify status of downhole and surface safety valves.",
+                "steps": [
+                    "Confirm the intended position of the SSSV and surface valves.",
+                    "If unintentional, contact Field Service Tech for immediate on-site inspection.",
+                    "Do not restart pump until valve status is confirmed."
+                ],
+                "possible_causes": "Accidental closure, control line failure, or safety shutdown."
+            },
+            "Increase in Frequency": {
+                "priority": "Low",
+                "primary_action": "Review recent VSD (Variable Speed Drive) frequency changes.",
+                "steps": [
+                    "Verify if frequency increase was an intentional operational change.",
+                    "Monitor intake pressure closely to avoid pump-off condition.",
+                    "If unintentional, revert to the previous setpoint and monitor."
+                ],
+                "possible_causes": "Manual operator adjustment or automated optimization."
+            },
+            "Normal Operation": {
+                "priority": "Info",
+                "primary_action": "System operating within expected parameters.",
+                "steps": [
+                    "Continue routine monitoring.",
+                    "No immediate intervention required."
+                ],
+                "possible_causes": "N/A"
+            },
+            "default": {
+                "priority": "High",
+                "primary_action": "Unrecognized pattern detected. Manual analysis required.",
+                "steps": [
+                    "Review recent trends of all sensor data.",
+                    "Compare current operations with the daily well plan.",
+                    "Alert senior production engineer for investigation."
+                ],
+                "possible_causes": "Complex failure mode, sensor malfunction, or a new, unlearned pattern."
+            }
+        }
+
+        # 5. Ekstrak semua data dan bangun response JSON yang kaya
+        final_prediction = latest_result['failure_mode']
+        prediction_proba = latest_result['confidence']
+
+        # Dapatkan detail aksi dari kamus
+        action_details = PRESCRIPTIVE_ACTIONS.get(final_prediction, PRESCRIPTIVE_ACTIONS["default"])
+
+        # Buat response akhir
         return jsonify({
             "success": True,
             "well_name": latest_result['well_name'],
             "prediction_timestamp_utc": latest_result['prediction_timestamp_utc'].isoformat(),
             "prediction_details": {
-                "failure_mode": latest_result['failure_mode'],
-                "confidence": round(float(latest_result['confidence']), 4)
+                "failure_mode": final_prediction,
+                "confidence": round(float(prediction_proba), 4),
+                "priority": action_details.get("priority", "Unknown")
+            },
+            "recommended_action": {
+                "summary": action_details.get("primary_action", "No action defined."),
+                "detailed_steps": action_details.get("steps", []),
+                "possible_causes": action_details.get("possible_causes", [])
+            },
+            "contributing_factors": {
+                "Intake_Pressure_Trend": latest_result['Intake_Pressure_trend'],
+                "Discharge_Pressure_Trend": latest_result['Discharge_Pressure_trend'],
+                "Vibration_Trend": latest_result['Vibration_trend'],
+                "Oil_Rate_Trend": latest_result['OIL_RATE_numeric_trend']
             }
         })
 
@@ -1558,89 +1720,89 @@ def predict_dca_parameters():
         input_data = request.get_json()
         if not input_data:
             return jsonify({
-                "success": False, 
-                "error": "Invalid input", 
+                "success": False,
+                "error": "Invalid input",
                 "message": "Request body harus berisi JSON."
             }), 400
 
         # 2. Load semua 3 model untuk DCA parameters
         model_qi_obj = project.get_saved_model('obNojUbY')  # DCA_QI
-        model_di_obj = project.get_saved_model('IjlqFq4w')  # DCA_DI  
+        model_di_obj = project.get_saved_model('IjlqFq4w')  # DCA_DI
         model_b_obj = project.get_saved_model('mh8CKwbK')   # DCA_B
-        
+
         # 3. Download dan load model untuk mendapatkan feature requirements
         # Get active version untuk model pertama (asumsi semua model punya feature yang sama)
         active_version_id = model_qi_obj.get_active_version().get('id')
         version_details = model_qi_obj.get_version_details(active_version_id)
         version_details.get_scoring_python("./model_qi.zip")
-        
+
         # Load model QI untuk mendapatkan feature names
         model_qi = loader.load_model(export_path="./model_qi.zip")
-        
+
         # Dapatkan semua feature names yang dibutuhkan
         raw_details = version_details.get_raw()
         all_feature_names = list(raw_details['preprocessing']['per_feature'].keys())
         print(f"All features needed: {all_feature_names}")
-        
+
         # Download model lainnya
         active_version_di = model_di_obj.get_active_version().get('id')
         version_details_di = model_di_obj.get_version_details(active_version_di)
         version_details_di.get_scoring_python("./model_di.zip")
         model_di = loader.load_model(export_path="./model_di.zip")
-        
+
         active_version_b = model_b_obj.get_active_version().get('id')
         version_details_b = model_b_obj.get_version_details(active_version_b)
         version_details_b.get_scoring_python("./model_b.zip")
         model_b = loader.load_model(export_path="./model_b.zip")
-        
+
         # 4. Konversi JSON ke Pandas DataFrame dengan semua kolom yang dibutuhkan
         input_df = pd.DataFrame(columns=all_feature_names, index=[0])
         input_df.update(pd.Series(input_data))
-        
+
         # 5. Lakukan prediksi untuk ketiga parameter DCA
         # Prediksi QI (Initial Production Rate)
         qi_result = model_qi.predict(input_df)
         qi_prediction = qi_result['prediction'][0] if 'prediction' in qi_result else qi_result[0]
-        
+
         # Prediksi DI (Initial Decline Rate)
         di_result = model_di.predict(input_df)
         di_prediction = di_result['prediction'][0] if 'prediction' in di_result else di_result[0]
-        
+
         # Prediksi B (Decline Exponent)
         b_result = model_b.predict(input_df)
         b_prediction = b_result['prediction'][0] if 'prediction' in b_result else b_result[0]
-        
+
         print(f"\nPrediction Results:")
         print(f"QI (Initial Rate): {qi_prediction}")
         print(f"DI (Decline Rate): {di_prediction}")
         print(f"B (Decline Exponent): {b_prediction}")
-        
+
         # 6. Siapkan response dalam format JSON
         return jsonify({
             "success": True,
             "predictions": {
                 "qi": float(qi_prediction),  # Initial Production Rate
-                "di": float(di_prediction),  # Initial Decline Rate  
+                "di": float(di_prediction),  # Initial Decline Rate
                 "b": float(b_prediction)     # Decline Exponent
             },
             "model_info": {
                 "qi_model": "DCA_QI Predictor",
-                "di_model": "DCA_DI Predictor", 
+                "di_model": "DCA_DI Predictor",
                 "b_model": "DCA_B Predictor"
             },
             "features_used": len(all_feature_names),
             "required_features": [
-                'AVG_ANNULUS_PRESS', 'AVG_CHOKE_SIZE_P', 'AVG_DOWNHOLE_PRESSURE', 
-                'AVG_DOWNHOLE_TEMPERATURE', 'AVG_DP_TUBING', 'AVG_WHP_P', 'AVG_WHT_P', 
-                'CUM_OIL_VOL_WELL', 'DP_CHOKE_SIZE', 'SYN_GOR_SCF_STB', 
-                'SYN_OIL_DENSITY_API', 'SYN_OIL_FVF_PROXY_RB_STB', 'SYN_PERFORATION_EFFICIENCY', 
-                'SYN_RESERVOIR_PRESSURE_PROXY_PSIA', 'SYN_SEG_AVG_INITIAL_SW', 
-                'SYN_SEG_AVG_PERM_MD', 'SYN_SEG_AVG_POROSITY', 'SYN_SEG_EFFECTIVE_KH_PROXY_MD_FT', 
-                'SYN_SEG_MOBILITY_PROXY', 'SYN_SEG_NET_PAY_FT', 'SYN_SEG_OOIP_PROXY_MMSTB', 
+                'AVG_ANNULUS_PRESS', 'AVG_CHOKE_SIZE_P', 'AVG_DOWNHOLE_PRESSURE',
+                'AVG_DOWNHOLE_TEMPERATURE', 'AVG_DP_TUBING', 'AVG_WHP_P', 'AVG_WHT_P',
+                'CUM_OIL_VOL_WELL', 'DP_CHOKE_SIZE', 'SYN_GOR_SCF_STB',
+                'SYN_OIL_DENSITY_API', 'SYN_OIL_FVF_PROXY_RB_STB', 'SYN_PERFORATION_EFFICIENCY',
+                'SYN_RESERVOIR_PRESSURE_PROXY_PSIA', 'SYN_SEG_AVG_INITIAL_SW',
+                'SYN_SEG_AVG_PERM_MD', 'SYN_SEG_AVG_POROSITY', 'SYN_SEG_EFFECTIVE_KH_PROXY_MD_FT',
+                'SYN_SEG_MOBILITY_PROXY', 'SYN_SEG_NET_PAY_FT', 'SYN_SEG_OOIP_PROXY_MMSTB',
                 'SYN_SEG_RE_FT', 'SYN_SKIN_FACTOR', 'SYN_WATER_INJECTION_SUPPORT_FACTOR'
             ]
         })
-        
+
     except KeyError as e:
         print(f"Error pada saat prediksi: Kunci tidak ditemukan. Error: {e}")
         return jsonify({
@@ -1648,7 +1810,7 @@ def predict_dca_parameters():
             "error": f"Key not found: {e}. Check model details or prediction output.",
             "message": "Gagal memproses prediksi. Kunci yang dibutuhkan tidak ditemukan."
         }), 500
-        
+
     except Exception as e:
         print(f"Error pada saat prediksi: {e}")
         return jsonify({
