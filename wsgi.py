@@ -11,25 +11,20 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
-
-# Import WEBAIKU after environment is loaded
-from webaiku.extension import WEBAIKU
+logger.info("Environment variables loaded")
 
 # Initialize Flask app
 app = Flask(__name__)
+logger.info("Flask app initialized")
 
 # Configure CORS for Dataiku CodeStudio
 CORS(app,
-     # Allow more origins for CodeStudio environment
-     origins=["*",
-              "http://localhost:4200",
-              "http://localhost:5173",
-              "http://localhost:3000",
-              # Add Dataiku CodeStudio domains if they have specific patterns
-              "https://*.dataiku.com"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
-     supports_credentials=True)
+    origins=["*"],  # Simplified for development
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    supports_credentials=True)
+
+logger.info("CORS configured")
 
 # Add request logging middleware
 @app.before_request
@@ -40,27 +35,40 @@ def log_request_info():
     logger.debug('Args: %s', dict(request.args))
     logger.debug('Origin: %s', request.headers.get('Origin', 'No origin'))
 
-# Initialize WEBAIKU with your app - ensure paths are correct for CodeStudio
-webaiku_instance = WEBAIKU(
-    app,
-    "webapps/spark",  # Check if this path is correct in CodeStudio
-    int(os.getenv("VITE_API_PORT", 5000))  # Provide default if env var is missing
-)
+# Add a health check route
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy", "message": "Flask app is running"})
 
-# Register the blueprint through WEBAIKU
-webaiku_instance.extend(app, [fetch_api])
+# Add a simple test route
+@app.route('/api/test', methods=['GET'])
+def test_route():
+    return jsonify({"message": "Flask API is working!", "status": "success"})
 
-# Print the app's config for debugging
-logger.debug("Flask App Config: %s", {k: v for k, v in app.config.items() if not k.startswith('_')})
+# Register the fetch_api blueprint with /api prefix
+try:
+    app.register_blueprint(fetch_api, url_prefix='/api')
+    logger.info("fetch_api blueprint registered successfully with /api prefix")
+except Exception as e:
+    logger.error(f"Blueprint registration failed: {e}")
+    raise
+
+# Debug: Print blueprint info
+logger.info(f"fetch_api blueprint name: {fetch_api.name}")
+logger.info(f"fetch_api blueprint url_prefix: {getattr(fetch_api, 'url_prefix', 'None')}")
 
 if __name__ == "__main__":
+    logger.info("=== ENTERING MAIN ===")
+    
     # Log all registered routes
     logger.info("\n==== REGISTERED ROUTES ====")
     for rule in sorted(app.url_map.iter_rules(), key=lambda x: str(x)):
-        logger.info(f"Route: {rule}, Methods: {rule.methods}")
+        logger.info(f"Route: {rule.rule}, Methods: {rule.methods}, Endpoint: {rule.endpoint}")
     logger.info("===========================\n")
-
-    # Run the app with CodeStudio-friendly settings
+    
+    # Run the app
     port = int(os.getenv("VITE_API_PORT", 5000))
-    logger.info(f"Starting Flask app on port {port}")
-    app.run(host="0.0.0.0", port=port, debug=True)  # Use 0.0.0.0 to accept connections from anywhere
+    host = os.getenv("FLASK_HOST", "0.0.0.0")
+    
+    logger.info(f"Starting Flask app on {host}:{port}")
+    app.run(host=host, port=port, debug=True)
