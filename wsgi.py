@@ -71,4 +71,5 @@ if __name__ == "__main__":
     host = os.getenv("FLASK_HOST", "0.0.0.0")
     
     logger.info(f"Starting Flask app on {host}:{port}")
-    app.run(host=host, port=port, debug=True)
+    app.run(host=host, port=port, debug=False, use_reloader=False)
+    logger.info("=== EXITING MAIN ===")
